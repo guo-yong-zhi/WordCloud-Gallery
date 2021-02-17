@@ -2,10 +2,10 @@ function markdownsource(f, results=[]; doeval=true)
     c = []
     function code(c)
         if isempty(c) return end
-        push!(results, "```julia\n")
+        push!(results, "\n```julia\n")
         append!(results, c)
         empty!(c)
-        push!(results, "```  \n")
+        push!(results, "\n```  \n")
     end
     for l in eachline(f, keep=true)
         if startswith(l, "#md#")
