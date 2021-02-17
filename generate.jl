@@ -1,19 +1,26 @@
+function newline!(results)
+    if !isempty(results) && !endswith(results[end], "\n")
+        push!(results, "\n")
+    end
+end
 function markdownsource(f, results=[]; doeval=true)
     c = []
     function code(c)
         if isempty(c) return end
-        push!(results, "\n```julia\n")
+        newline!(results)
+        push!(results, "```julia\n")
         append!(results, c)
         empty!(c)
-        push!(results, "\n```  \n")
+        newline!(results)
+        push!(results, "```  \n")
     end
     for l in eachline(f, keep=true)
         if startswith(l, "#md#")
             code(c)
-            push!(results, lstrip(l[5:end]))
+            push!(results, l[6:end])
         elseif startswith(l, "#eval#")
             if doeval
-                eval(Meta.parse(lstrip(l[7:end])))
+                eval(Meta.parse(l[8:end]))
             end
         else
             push!(c, l)
@@ -26,24 +33,26 @@ end
 using WordCloud
 eval.(Meta.parse.(ARGS))
 doeval = (@isdefined doeval) ? doeval : true
-exception = (@isdefined exception ) ? exception : true
+exception = (@isdefined exception) ? exception : true
+using Pkg
+using UUIDs
+ctx = Pkg.Operations.Context()
+v = ctx.env.manifest[UUID("6385f0a0-cb03-45b6-9089-4e0acc74b26b")].version
 
-function examplesmarkdown(examples=WordCloud.examples)
+function examplesmarkdown(examples=WordCloud.examples; doeval=doeval, exception=exception)
     mds= [
     "# WordCloud-Gallery\n"
-    "This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples`.  "
-    "Run `evalfile(\"generate.jl\", [\"doeval=true\", \"exception=true\"])` to create this file.  \n"
+    "This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v$v).  "
+    "Run `evalfile(\"generate.jl\", [\"doeval=true\", \"exception=true\"])` in julia REPL to create this file.  \n"
     ["* [$e](#$e)\n" for e in examples]...
     ]
     for e in examples
         println("#"^10, e, "#"^10)
         try
-            e = replace(e, " "=>"-")
+            e = replace(e, " "=>"-") |> lowercase
             push!(mds, "# $e\n")
             markdownsource(pkgdir(WordCloud)*"/examples/$e.jl", mds, doeval=doeval)
-            if !isempty(mds) && !endswith(mds[end], "\n")
-                push!(mds, "\n")
-            end
+            newline!(mds)
         catch ex
             if exception
                 throw(ex)
@@ -56,6 +65,6 @@ function examplesmarkdown(examples=WordCloud.examples)
 end
 
 function main()
-    write("README.md", examplesmarkdown()...)
+    write("README.md", examplesmarkdown()...);
 end
 main()
