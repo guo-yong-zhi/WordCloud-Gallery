@@ -44,12 +44,11 @@ function examplesmarkdown(examples=WordCloud.examples; doeval=doeval, exception=
     "# WordCloud-Gallery\n"
     "This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v$v).  "
     "Run `evalfile(\"generate.jl\", [\"doeval=true\", \"exception=true\"])` in julia REPL to create this file.  \n"
-    ["* [$e](#$e)\n" for e in examples]...
+    ["- [$e](#$(lowercase(replace(e, " "=>"-"))))\n" for e in examples]...
     ]
     for e in examples
         println("#"^10, e, "#"^10)
         try
-            e = replace(e, " "=>"-") |> lowercase
             push!(mds, "# $e\n")
             markdownsource(pkgdir(WordCloud)*"/examples/$e.jl", mds, doeval=doeval)
             newline!(mds)
