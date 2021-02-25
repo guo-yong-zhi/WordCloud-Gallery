@@ -1,17 +1,17 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.4.6).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
-* [alice](#alice)
-* [animation](#animation)
-* [benchmark](#benchmark)
-* [compare](#compare)
-* [fromweb](#fromweb)
-* [juliadoc](#juliadoc)
-* [lettermask](#lettermask)
-* [pattern](#pattern)
-* [qianziwen](#qianziwen)
-* [random](#random)
-* [specifiedstyle](#specifiedstyle)
-* [中文](#中文)
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.4.7).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+- [alice](#alice)
+- [animation](#animation)
+- [benchmark](#benchmark)
+- [compare](#compare)
+- [fromweb](#fromweb)
+- [juliadoc](#juliadoc)
+- [lettermask](#lettermask)
+- [pattern](#pattern)
+- [qianziwen](#qianziwen)
+- [random](#random)
+- [specifiedstyle](#specifiedstyle)
+- [中文](#中文)
 # alice
 ```julia
 using WordCloud
@@ -82,8 +82,8 @@ using WordCloud
 
 stwords = ["us", "will"];
 println("==Obama's==")
-cs = WordCloud.randomscheme()
-as = WordCloud.randomangles()
+cs = WordCloud.randomscheme() #:Set1_8
+as = WordCloud.randomangles() #(0,90,45,-45)
 fr = 0.65 #not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
@@ -299,7 +299,7 @@ wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"], maxweight=1, maxnum=300), 
     # mask = padding(WordCloud.svg2bitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
     mask = shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
-    colors = :seaborn_dark,
+    colors = :seaborn_icefire_gradient,
     angles = -90:90,
     run=x->x, #turn off the useless initimage! and placement! in advance
 )
