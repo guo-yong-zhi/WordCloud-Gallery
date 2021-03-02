@@ -1,10 +1,11 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.4.7).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.4.9).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
 - [compare](#compare)
 - [fromweb](#fromweb)
+- [gathering](#gathering)
 - [juliadoc](#juliadoc)
 - [lettermask](#lettermask)
 - [pattern](#pattern)
@@ -84,7 +85,7 @@ stwords = ["us", "will"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() #:Set1_8
 as = WordCloud.randomangles() #(0,90,45,-45)
-fr = 0.65 #not too high
+fr = 0.7 #not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
     colors = cs,
@@ -96,7 +97,7 @@ wca = wordcloud(
 println("==Trump's==")
 wcb = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords),
-    mask = getmask(wca),
+    mask = getsvgmask(wca),
     colors = cs,
     angles = as,
     fillingrate = fr,
@@ -166,6 +167,22 @@ catch e
 end
 ```  
 ![](fromweb.png)  
+# gathering
+Big words will be placed closer to the center
+```julia
+using WordCloud
+wc = wordcloud(
+    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    angles = 0,
+    fillingrate = 0.7,
+    run = initimages!)
+placement!(wc, style=:gathering, level=5)
+generate!(wc)
+println("results are saved to gathering.svg")
+paint(wc, "gathering.svg")
+wc
+```  
+![](gathering.svg)  
 # juliadoc
 ```julia
 using WordCloud
