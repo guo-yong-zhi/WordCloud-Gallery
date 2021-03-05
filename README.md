@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.4.9).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.5.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
@@ -21,7 +21,7 @@ wc = wordcloud(
     mask = loadmask(pkgdir(WordCloud)*"/res/alice_mask.png", color="#faeef8"),
     colors = :seaborn_dark,
     angles = (0, 90),
-    fillingrate = 0.7) |> generate!
+    density = 0.55) |> generate!
 println("results are saved to alice.png")
 paint(wc, "alice.png", background=outline(wc.mask, color="purple", linewidth=1))
 wc
@@ -37,7 +37,7 @@ df = CSV.File(pkgdir(WordCloud)*"/res/guxiang_frequency.txt", header=false)|> Da
 words = df[!, "Column2"]
 weights = df[!, "Column3"]
 
-wc = wordcloud(words, weights, fillingrate=0.8)
+wc = wordcloud(words, weights, density=0.7)
 gifdirectory = "guxiang_animation"
 generate_animation!(wc, 100, outputdir=gifdirectory)
 println("results are saved in guxiang_animation")
@@ -54,7 +54,7 @@ println("This test will take several minutes")
 
 words = [Random.randstring(rand(1:8)) for i in 1:200]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
-wc1 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45), fillingrate=0.7)
+wc1 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45), density=0.55)
 
 words = [Random.randstring(rand(1:8)) for i in 1:500]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
@@ -85,12 +85,12 @@ stwords = ["us", "will"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() #:Set1_8
 as = WordCloud.randomangles() #(0,90,45,-45)
-fr = 0.7 #not too high
+dens = 0.55 #not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
     colors = cs,
     angles = as,
-    fillingrate = fr) |> generate!
+    density = dens) |> generate!
 ```  
 ### Then generate the wordcloud on the right      
 ```julia
@@ -100,7 +100,7 @@ wcb = wordcloud(
     mask = getsvgmask(wca),
     colors = cs,
     angles = as,
-    fillingrate = fr,
+    density = dens,
     run = x->nothing, #turn off the useless initimage! and placement! in advance
 )
 ```  
@@ -116,7 +116,7 @@ end
 initimages!(wcb)
 
 println("=ignore defferent words=")
-ignore(wcb, getwords(wcb) .∉ Ref(samewords)) do
+keep(wcb, samewords) do
     @assert Set(wcb.words) == Set(samewords)
     centers = getpositions(wca, samewords, type=getcenter)
     setpositions!(wcb, samewords, centers, type=setcenter!) #manually initialize the position,
@@ -174,10 +174,10 @@ using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     angles = 0,
-    fillingrate = 0.7,
+    density = 0.6,
     run = initimages!)
 placement!(wc, style=:gathering, level=5)
-generate!(wc)
+generate!(wc, patient=-1)
 println("results are saved to gathering.svg")
 paint(wc, "gathering.svg")
 wc
@@ -210,7 +210,7 @@ end
 wc = wordcloud(
     [words..., "∴"], #add a placeholder for julia-logo
     [weights..., weights[1]], 
-    fillingrate=0.8,
+    density = 0.65,
     mask = shape(box, 900, 300, 0, color=0.95, backgroundcolor=(0,0,0,0)),
     colors = ((0.796,0.235,0.20), (0.584,0.345,0.698), (0.22,0.596,0.149)),
     angles = (0, -45, 45),
@@ -251,7 +251,7 @@ wc = wordcloud(
         mask = mask,
         angles = 0,
         colors = ("#006BB0", "#EFA90D", "#1D1815", "#059341", "#DC2F1F"),
-        fillingrate=0.7,
+        density=0.55,
         ) |> generate!
 println("results are saved to lettermask.svg")
 paint(wc, "lettermask.svg" , background=false)
@@ -272,7 +272,7 @@ wc = wordcloud(
     run=x->x)
 ```  
 * `words` & `weights` are just placeholders  
-* style arguments like `colors`, `angles` and `fillingrate` have no effect  
+* style arguments like `colors`, `angles` and `density` have no effect  
 
 And, you should manually initialize images for the placeholders, instead of calling `initimages!`  
 ```julia
@@ -363,10 +363,12 @@ jieba.add_word("英特纳雄耐尔")
 wc = wordcloud(
     processtext(jieba.lcut(TheInternationale)), 
     colors = "#DE2910",
-    mask = WordCloud.randommask("#FFDE00", 400),
-    fillingrate=0.8)|>generate!
-println("结果保存在 中文.svg")
-paint(wc, "中文.svg")
+#     mask = WordCloud.randommask("#FFDE00", 400),
+    mask = loadmask(pkgdir(WordCloud)*"/res/heart_mask.png", color="#FFDE00"),
+    density=0.65) |> generate!
+
+println("结果保存在 中文.png")
+paint(wc, "中文.png")
 wc
 ```  
-![](中文.svg)  
+![](中文.png)  
