@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.5.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
@@ -51,7 +51,7 @@ using WordCloud
 using Random
 
 println("This test will take several minutes")
-
+@show Threads.nthreads()
 words = [Random.randstring(rand(1:8)) for i in 1:200]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
 wc1 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45), density=0.55)
@@ -65,15 +65,23 @@ weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
 wc3 = wordcloud(words, weights, mask=shape(box, 2000, 2000, 100, color=0.15), angles=(0,90,45))
 
 wcs = [wc1, wc1, wc2, wc3] #repeat wc1 to trigger compiling
-ts = [WordCloud.trainepoch_E!,WordCloud.trainepoch_EM!,WordCloud.trainepoch_EM2!,WordCloud.trainepoch_EM3!,
-        WordCloud.trainepoch_P!,WordCloud.trainepoch_P2!,WordCloud.trainepoch_Px!]
+ts = [WordCloud.Stuffing.trainepoch_E!,WordCloud.Stuffing.trainepoch_EM!,
+WordCloud.Stuffing.trainepoch_EM2!,WordCloud.Stuffing.trainepoch_EM3!,
+WordCloud.Stuffing.trainepoch_P!,WordCloud.Stuffing.trainepoch_P2!,WordCloud.Stuffing.trainepoch_Px!]
+es = [[] for i in 1:length(wcs)]
 for (i,wc) in enumerate(wcs)
     println("\n\n", "*"^10, "wordcloud - $(length(wc.words)) words on mask$(size(wc.mask))", "*"^10)
     for (j,t) in enumerate(ts)
         println("\n", i-1, "==== ", j, "/", length(ts), " ", nameof(t))
         placement!(wc)
-        @time generate!(wc, trainer=t, retry=1)
+        @time e = @elapsed generate!(wc, trainer=t, retry=1)
+        push!(es[i],nameof(t)=>e)
     end
+end
+println("SUMMARY")
+for (i,(wc,e)) in enumerate(zip(wcs, es))
+    println("##$(i-1) $(length(wc.words))@$(size(wc.mask)):")
+    println(repr("text/plain", e))
 end
 ```  
 # compare
@@ -198,13 +206,13 @@ end
 docs = (readdir(joinpath(dirname(Sys.BINDIR), "share/doc/julia/html/en", dir), join=true) for dir in ["manual", "base", "stdlib"])
 docs = docs |> Iterators.flatten
 
-words, weights = processtext(maxnum=300, maxweight=1) do
+words, weights = processtext(maxnum=400, maxweight=1) do
     counter = Dict{String,Int}()
     for doc in docs
         content = html2text(open(doc))
         countwords(content, counter=counter)
     end
-    counter
+    counter |> casemerge!
 end
 
 wc = wordcloud(
@@ -218,6 +226,8 @@ wc = wordcloud(
     transparentcolor=(0,0,0,0),
 )
 setangles!(wc, "julia", 0)
+# setangles!(wc, "function", 45)
+# initimage!(wc, "function")
 setcolors!(wc, "julia", (0.796,0.235,0.20))
 # setfonts!(wc, "julia", "forte")
 initimage!(wc, "julia")
@@ -227,6 +237,7 @@ sz1 = size(getimages(wc, "∴"))
 sz2 = size(getimages(wc, "julia"))
 y1, x1 = (size(wc.mask) .- (sz1[1], sz1[2]+sz2[2])) .÷ 2
 y2 = (size(wc.mask, 1) - sz2[1]) ÷ 2
+x1 = round(Int, x1 * 0.9)
 setpositions!(wc, "∴", (x1, y1))
 setpositions!(wc, "julia", (x1+sz1[2], y2))
 
@@ -259,7 +270,7 @@ wc
 ```  
 ![](lettermask.svg)  
 # pattern
-The elements in the output image don't have to be text, and shapes are OK
+The [engine](https://github.com/guo-yong-zhi/Stuffing.jl) is designed for general purpose, so the outputs don't have to be text, and shapes are OK
 ```julia
 using WordCloud
 
@@ -276,11 +287,14 @@ wc = wordcloud(
 
 And, you should manually initialize images for the placeholders, instead of calling `initimages!`  
 ```julia
+dens = 0.6
+sz = 3expm1.(rand(l)) .+ 1
+sz ./= √(sum(π * (sz ./ 2).^2 ./ dens) / prod(size(wc.mask))) # set a proper size according to the density
 ## svg version
-#shapes = [shape(ellipse, repeat([floor(20expm1(rand())+5)],2)..., color=rand(sc)) for i in 1:l]
+#shapes = [shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l]
 #setsvgimages!(wc, :, shapes)
 ## bitmap version
-shapes = WordCloud.svg2bitmap.([shape(ellipse, repeat([floor(15expm1(rand())+5)],2)..., color=rand(sc)) for i in 1:l])
+shapes = WordCloud.svg2bitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l])
 setimages!(wc, :, shapes)
 
 setstate!(wc, :initimages!) #set the state flag after manual initialization
@@ -324,7 +338,7 @@ wc = wordcloud(
 setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
 setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
 setcolors!(wc, "Alice in Wonderland", "purple");
-setfontsizes!(wc, "Alice in Wonderland", 2.1size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
+setfontsizes!(wc, "Alice in Wonderland", 2.05size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
 initimage!(wc, "Alice in Wonderland") # init it after adjust it's style
 setpositions!(wc, "Alice in Wonderland", reverse(size(wc.mask)) .÷ 2, type=setcenter!) # center it
 
