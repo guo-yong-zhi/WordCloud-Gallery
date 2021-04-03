@@ -3,7 +3,7 @@ function newline!(results)
         push!(results, "\n")
     end
 end
-function markdownsource(f, results=[]; doeval=true)
+function markdownsource(f, results=[]; doeval=true, exception=exception)
     c = []
     function code(c)
         if isempty(c) return end
@@ -20,7 +20,15 @@ function markdownsource(f, results=[]; doeval=true)
             push!(results, l[6:end])
         elseif startswith(l, "#eval#")
             if doeval
-                eval(Meta.parse(l[8:end]))
+                try
+                    eval(Meta.parse(l[8:end]))
+                catch ex
+                    if exception
+                        throw(ex)
+                    else
+                        @warn ex
+                    end
+                end
             end
         else
             push!(c, l)
