@@ -1,11 +1,12 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
 - [compare](#compare)
 - [fromweb](#fromweb)
 - [gathering](#gathering)
+- [highdensity](#highdensity)
 - [juliadoc](#juliadoc)
 - [lettermask](#lettermask)
 - [pattern](#pattern)
@@ -21,7 +22,7 @@ wc = wordcloud(
     mask = loadmask(pkgdir(WordCloud)*"/res/alice_mask.png", color="#faeef8"),
     colors = :seaborn_dark,
     angles = (0, 90),
-    density = 0.55) |> generate!
+    density = 0.5) |> generate!
 println("results are saved to alice.png")
 paint(wc, "alice.png", background=outline(wc.mask, color="purple", linewidth=1))
 wc
@@ -37,7 +38,7 @@ df = CSV.File(pkgdir(WordCloud)*"/res/guxiang_frequency.txt", header=false)|> Da
 words = df[!, "Column2"]
 weights = df[!, "Column3"]
 
-wc = wordcloud(words, weights, density=0.7)
+wc = wordcloud(words, weights, density=0.65)
 gifdirectory = "guxiang_animation"
 generate_animation!(wc, 100, outputdir=gifdirectory)
 println("results are saved in guxiang_animation")
@@ -56,7 +57,7 @@ words = [Random.randstring(rand(1:8)) for i in 1:200]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
 wc1 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45), density=0.55)
 
-words = [Random.randstring(rand(1:8)) for i in 1:500]
+words = [Random.randstring(rand(1:8)) for i in 1:400]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
 wc2 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45))
 
@@ -93,7 +94,7 @@ stwords = ["us", "will"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() #:Set1_8
 as = WordCloud.randomangles() #(0,90,45,-45)
-dens = 0.55 #not too high
+dens = 0.5 #not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
     colors = cs,
@@ -191,6 +192,36 @@ paint(wc, "gathering.svg")
 wc
 ```  
 ![](gathering.svg)  
+# highdensity
+```julia
+using WordCloud
+```  
+Sometimes you want a high-density output, and you may do it like this:
+```julia
+wc = wordcloud(
+    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    mask = shape(box, 400, 300, 10),
+    colors = :Dark2_3,
+    angles = (0, 90),
+    density = 0.7) |> generate!
+paint(wc, "highdensity.png")
+```
+But you may find that doesn't work. That is because there should be at least 1 pixel gap between two words, which is controlled by the `border` parameter (default 1) in `wordcloud`. While, when the picture is small, 1 pixel is expensive. So, that can be done as follows:
+```julia
+wc = wordcloud(
+    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    mask = shape(box, 400*2, 300*2, 10*2),
+    colors = :Dark2_3,
+    angles = (0, 90),
+    density = 0.7) |> generate!
+paint(wc, "highdensity.png", ratio=0.5)
+```  
+
+```julia
+println("results are saved to highdensity.png")
+wc
+```  
+![highdensity](highdensity.png)  
 # juliadoc
 ```julia
 using WordCloud
@@ -319,9 +350,12 @@ generate!(wc)
 using WordCloud
 using Random
 
-words = [Random.randstring(rand(1:8)) for i in 1:500]
+words = [Random.randstring(rand(1:8)) for i in 1:300]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
-wc = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angles=(0,90,45)) |> generate!
+wc = wordcloud(words, weights, 
+    mask=shape(ellipse, 500, 500, color=0.15),
+    density=0.5,
+    angles=(0,90,45)) |> generate!
 ```  
 # specifiedstyle
 ```julia
@@ -338,7 +372,10 @@ wc = wordcloud(
 setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
 setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
 setcolors!(wc, "Alice in Wonderland", "purple");
-setfontsizes!(wc, "Alice in Wonderland", 2.05size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
+setfontsizes!(wc, "Alice in Wonderland", size(wc.mask, 2)/length("Alice in Wonderland"))
+initimage!(wc, "Alice in Wonderland")
+r = size(wc.mask, 2)/size(getimages(wc, "Alice in Wonderland"), 2) * 0.95
+setfontsizes!(wc, "Alice in Wonderland", r*size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
 initimage!(wc, "Alice in Wonderland") # init it after adjust it's style
 setpositions!(wc, "Alice in Wonderland", reverse(size(wc.mask)) .÷ 2, type=setcenter!) # center it
 
