@@ -1,9 +1,10 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.7).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
 - [compare](#compare)
+- [custom](#custom)
 - [fromweb](#fromweb)
 - [gathering](#gathering)
 - [highdensity](#highdensity)
@@ -12,7 +13,7 @@ This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), whi
 - [pattern](#pattern)
 - [qianziwen](#qianziwen)
 - [random](#random)
-- [specifiedstyle](#specifiedstyle)
+- [recolor](#recolor)
 - [中文](#中文)
 # alice
 ```julia
@@ -76,7 +77,7 @@ for (i,wc) in enumerate(wcs)
         println("\n", i-1, "==== ", j, "/", length(ts), " ", nameof(t))
         placement!(wc)
         @time e = @elapsed generate!(wc, trainer=t, retry=1)
-        push!(es[i],nameof(t)=>e)
+        push!(es[i], string(nameof(t)) * (getstate(wc)==:generate! ? " ✔" : " ✘")=>e)
     end
 end
 println("SUMMARY")
@@ -159,6 +160,38 @@ wca, wcb
 ```  
 ![](address_compare/compare.png)  
 ![](address_compare/result.gif)  
+# custom
+```julia
+using WordCloud
+wc = wordcloud(
+    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"], maxweight=1, maxnum=300), 
+    # mask = padding(WordCloud.svg2bitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
+    mask = shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
+    colors = :seaborn_icefire_gradient,
+    angles = -90:90,
+    run=x->x, #turn off the useless initimage! and placement! in advance
+)
+
+setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
+setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
+setcolors!(wc, "Alice in Wonderland", "purple");
+setfontsizes!(wc, "Alice in Wonderland", size(wc.mask, 2)/length("Alice in Wonderland"))
+initimage!(wc, "Alice in Wonderland")
+r = size(wc.mask, 2)/size(getimages(wc, "Alice in Wonderland"), 2) * 0.95
+setfontsizes!(wc, "Alice in Wonderland", r*size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
+initimage!(wc, "Alice in Wonderland") # init it after adjust it's style
+setpositions!(wc, "Alice in Wonderland", reverse(size(wc.mask)) .÷ 2, type=setcenter!) # center it
+
+pin(wc, "Alice in Wonderland") do
+    initimages!(wc) #init inside `pin` to reset the size of other words
+    generate!(wc)
+end
+
+println("results are saved to custom.svg")
+paint(wc, "custom.svg")
+wc
+```  
+![](custom.svg)  
 # fromweb
 ```julia
 using WordCloud
@@ -357,38 +390,76 @@ wc = wordcloud(words, weights,
     density=0.5,
     angles=(0,90,45)) |> generate!
 ```  
-# specifiedstyle
+# recolor
 ```julia
 using WordCloud
+using Random
+
+background = loadmask(pkgdir(WordCloud)*"/res/butterfly.png")
+istrans = c->maximum(c[1:3])*(c[4]/255)<128
+mask = WordCloud.backgroundmask(background, istrans)
+showmask(background, mask, highlight=(1,0,0,0.7))
+```  
+`showmask` might be helpful to find a proper `istrans` function
+```julia
+words = [randstring(1) for i in 1:600]
+weights = randexp(length(words)) .+ 1
+
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"], maxweight=1, maxnum=300), 
-    # mask = padding(WordCloud.svg2bitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
-    mask = shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
-    colors = :seaborn_icefire_gradient,
-    angles = -90:90,
-    run=x->x, #turn off the useless initimage! and placement! in advance
-)
+    words, weights,
+    mask = background,
+    colors = "LimeGreen",
+    angles = -30,
+    density = 0.45,
+    transparentcolor = istrans,
+    border = 1,
+) |> generate!;
+```  
+## average style
+```julia
+recolor!(wc, style=:average)
+avgimg = paint(wc, background=loadmask(background, color=0.99))
+```  
+## clipping style
+```julia
+recolor!(wc, style=:clipping)
+clipimg = paint(wc, background=loadmask(background, color=0.99))
+```  
+## blending style
+```julia
+recolor!(wc, style=:reset)
+recolor!(wc, style=:blending, alpha=0.5) #blending with origin color - LimeGreen
+blendimg = paint(wc, background=loadmask(background, color=0.99))
+```  
+## mix style
+styles can also be mixed
+```julia
+# setcolors!(wc, :, "LimeGreen")
+recolor!(wc, style=:reset)
+recolor!(wc, 1:3:length(words), style=:average) #vector index is ok
+recolor!(wc, 2:3:length(words), style=:clipping)
+recolor!(wc, 3:3:length(words), style=:blending)
+setcolors!(wc, 200:250, "black")
+recolor!(wc, 200:250, style=:reset)
+setcolors!(wc, 1, "black")
+recolor!(wc, 1, style=:reset) #single index is ok
+mixstyleimg = paint(wc, background=loadmask(background, color=0.99))
+```  
 
-setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
-setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
-setcolors!(wc, "Alice in Wonderland", "purple");
-setfontsizes!(wc, "Alice in Wonderland", size(wc.mask, 2)/length("Alice in Wonderland"))
-initimage!(wc, "Alice in Wonderland")
-r = size(wc.mask, 2)/size(getimages(wc, "Alice in Wonderland"), 2) * 0.95
-setfontsizes!(wc, "Alice in Wonderland", r*size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
-initimage!(wc, "Alice in Wonderland") # init it after adjust it's style
-setpositions!(wc, "Alice in Wonderland", reverse(size(wc.mask)) .÷ 2, type=setcenter!) # center it
-
-pin(wc, "Alice in Wonderland") do
-    initimages!(wc) #init inside `pin` to reset the size of other words
-    generate!(wc)
-end
-
-println("results are saved to specifiedstyle.svg")
-paint(wc, "specifiedstyle.svg")
+```julia
+h, w = size(avgimg)
+lw = 21
+lc = eltype(avgimg)(0.1)
+vbar = zeros(eltype(avgimg), (h, lw))
+hbar = zeros(eltype(avgimg), (lw, 2w+lw))
+vbar[:, lw÷2+1] .= lc
+hbar[lw÷2+1, :] .= lc
+image = [avgimg vbar clipimg; hbar; blendimg vbar mixstyleimg]
+println("results are saved to recolor.png")
+WordCloud.save("recolor.png", image)
 wc
 ```  
-![](specifiedstyle.svg)  
+![recolor](recolor.png)  
 # 中文
 中文需要分词，须先配置python环境和安装结巴分词  
 ### 安装PyCall  
