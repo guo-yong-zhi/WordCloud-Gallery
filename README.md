@@ -1,11 +1,12 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.8).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.6.9).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
 - [compare](#compare)
 - [compare2](#compare2)
 - [custom](#custom)
+- [embedding](#embedding)
 - [fromweb](#fromweb)
 - [gathering](#gathering)
 - [highdensity](#highdensity)
@@ -162,7 +163,7 @@ wca, wcb
 ![](address_compare/compare.png)  
 ![](address_compare/result.gif)  
 # compare2
-This is a more symmetrical and accurate way to generate comparison wordclouds, but it may be more consuming.  
+This is a more symmetrical and accurate way to generate comparison wordclouds, but it may be more time consuming.  
 ### Prepare two wordcloud objects
 ```julia
 using WordCloud
@@ -293,6 +294,64 @@ paint(wc, "custom.svg")
 wc
 ```  
 ![](custom.svg)  
+# embedding
+The positions of words can be initialized with pre-trained word vectors.
+### Words
+```julia
+using WordCloud
+stwords = ["us", "will"];
+words_weights = processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords)
+words_weights = Dict(zip(words_weights...))
+```  
+### Embeddings
+```julia
+using Embeddings
+using TSne
+const embtable = load_embeddings(GloVe{:en})
+const get_word_index = Dict(word=>ii for (ii,word) in enumerate(embtable.vocab))
+function get_embedding(word)
+    ind = get_word_index[word]
+    emb = embtable.embeddings[:,ind]
+    return emb
+end
+wordvec = Dict()
+for k in keys(words_weights)
+    if k in keys(get_word_index)
+        wordvec[k] = get_embedding(k)
+    elseif lowercase(k) in keys(get_word_index)
+        wordvec[k] = get_embedding(lowercase(k))
+    else
+        pop!(words_weights, k)
+        println("remove ", k)
+    end
+end
+embedded = tsne(hcat(values(wordvec)...)', 2)
+```  
+### WordCloud
+```julia
+sc = WordCloud.randomscheme()
+wc = wordcloud(
+    words_weights,
+    mask = shape(ellipse, 1000, 1000, backgroundcolor=(0,0,0,0), color=WordCloud.chooseabgcolor(sc)),
+    colors = sc,
+    run = initimages!
+)
+
+pos = embedded
+mean = sum(pos, dims=1) / size(pos, 1)
+r = maximum(sqrt.(pos[:,1].^2 + pos[:,2].^2 ))
+pos = (pos .- mean) ./ 2r
+sz = collect(size(wc.mask))'
+pos = round.(Int, pos .* sz .+ sz ./ 2)
+
+setpositions!(wc, keys(wordvec)|>collect, eachrow(pos), type=setcenter!)
+setstate!(wc, :placement!)
+generate!(wc, patient=-1)
+println("results are saved to embedding.png")
+paint(wc, "embedding.png")
+wc
+```  
+![](embedding.png)  
 # fromweb
 ```julia
 using WordCloud
