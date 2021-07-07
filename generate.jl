@@ -54,11 +54,13 @@ function examplesmarkdown(examples=WordCloud.examples; doeval=doeval, exception=
     "Run `evalfile(\"generate.jl\", [\"doeval=true\", \"exception=true\"])` in julia REPL to create this file.  \n"
     ["- [$e](#$(lowercase(replace(e, " "=>"-"))))\n" for e in examples]...
     ]
+    doeval = doeval isa Bool ? doeval : Set(string.(doeval))
     for e in examples
         println("#"^10, e, "#"^10)
         try
             push!(mds, "# $e\n")
-            markdownsource(pkgdir(WordCloud)*"/examples/$e.jl", mds, doeval=doeval)
+            de = doeval isa Bool ? doeval : e in doeval
+            markdownsource(pkgdir(WordCloud)*"/examples/$e.jl", mds, doeval=de)
             newline!(mds)
         catch ex
             if exception
