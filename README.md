@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.7.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.7.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
@@ -12,6 +12,7 @@ This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), whi
 - [highdensity](#highdensity)
 - [juliadoc](#juliadoc)
 - [lettermask](#lettermask)
+- [nomask](#nomask)
 - [outline](#outline)
 - [pattern](#pattern)
 - [qianziwen](#qianziwen)
@@ -78,7 +79,7 @@ for (i,wc) in enumerate(wcs)
     println("\n\n", "*"^10, "wordcloud - $(length(wc.words)) words on mask$(size(wc.mask))", "*"^10)
     for (j,t) in enumerate(ts)
         println("\n", i-1, "==== ", j, "/", length(ts), " ", nameof(t))
-        placement!(wc)
+        placewords!(wc)
         @time e = @elapsed generate!(wc, trainer=t, retry=1)
         push!(es[i], string(nameof(t)) * (getstate(wc)==:generate! ? " ✔" : " ✘")=>e)
     end
@@ -94,7 +95,7 @@ end
 ```julia
 using WordCloud
 
-stwords = ["us", "will"];
+stwords = ["us"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() #:Set1_8
 as = WordCloud.randomangles() #(0,90,45,-45)
@@ -119,10 +120,10 @@ wcb = wordcloud(
     backgroundcolor = :maskcolor,
     maskcolor = getmaskcolor(wca),
     font = getparameter(wca, :font),
-    run = x->nothing, #turn off the useless initimage! and placement! in advance
+    run = x->nothing, #turn off the useless initword! and placewords! in advance
 )
 ```  
-Follow these steps to generate a wordcloud: initimage! -> placement! -> generate!
+Follow these steps to generate a wordcloud: initword! -> placewords! -> generate!
 ```julia
 samewords = getwords(wca) ∩ getwords(wcb)
 println(length(samewords), " same words")
@@ -131,20 +132,20 @@ for w in samewords
     setcolors!(wcb, w, getcolors(wca, w))
     setangles!(wcb, w, getangles(wca, w))
 end
-initimages!(wcb)
+initwords!(wcb)
 
 println("=ignore defferent words=")
 keep(wcb, samewords) do
     @assert Set(wcb.words) == Set(samewords)
     centers = getpositions(wca, samewords, type=getcenter)
     setpositions!(wcb, samewords, centers, type=setcenter!) #manually initialize the position,
-    setstate!(wcb, :placement!) #and set the state flag
+    setstate!(wcb, :placewords!) #and set the state flag
     generate!(wcb, 1000, teleporting=false, retry=1) #turn off the teleporting; retry=1 means no rescale
 end
 
 println("=pin same words=")
 pin(wcb, samewords) do
-    placement!(wcb)
+    placewords!(wcb)
     generate!(wcb, 1000, retry=1) #allow teleport but don‘t allow rescale
 end
 
@@ -174,7 +175,7 @@ This is a more symmetrical and accurate way to generate comparison wordclouds, b
 ```julia
 using WordCloud
 
-stwords = ["us", "will"];
+stwords = ["us"];
 cs = WordCloud.randomscheme() #:Set1_8#
 as = WordCloud.randomangles() #(0,90,45,-45)#
 dens = 0.5 #not too high
@@ -184,7 +185,7 @@ wca = wordcloud(
     angles = as,
     density = dens,
     backgroundcolor = :maskcolor,
-    run = x->nothing, #turn off the initimage! and placement! in advance
+    run = x->nothing, #turn off the initword! and placewords! in advance
 )
 wcb = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords),
@@ -213,19 +214,19 @@ end
 ```  
 ### Put the same words at same position
 ```julia
-initimages!(wca)
-initimages!(wcb)
+initwords!(wca)
+initwords!(wcb)
 keep(wca, samewords) do
-    placement!(wca)
+    placewords!(wca)
     fit!(wca, 1000)
 end
 pin(wca, samewords) do
-    placement!(wca) #place other words
+    placewords!(wca) #place other words
 end
 centers = getpositions(wca, samewords, type=getcenter)
 setpositions!(wcb, samewords, centers, type=setcenter!) #manually initialize the position,
 pin(wcb, samewords) do
-    placement!(wcb) #place other words
+    placewords!(wcb) #place other words
 end
 ```  
 ### Fit them all
@@ -234,7 +235,7 @@ function syncposition(samewords, pos, wca, wcb)
     pos2 = getpositions(wca, samewords, type=getcenter)
     if pos != pos2
         setpositions!(wcb, samewords, pos2, type=setcenter!)
-        setstate!(wcb, :placement!)
+        setstate!(wcb, :placewords!)
     end
     pos2
 end
@@ -285,21 +286,21 @@ wc = wordcloud(
     mask = shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     colors = :seaborn_icefire_gradient,
     angles = -90:90,
-    run=x->x, #turn off the useless initimage! and placement! in advance
+    run=x->x, #turn off the useless initword! and placewords! in advance
 )
 
 setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
 setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
 setcolors!(wc, "Alice in Wonderland", "purple");
 setfontsizes!(wc, "Alice in Wonderland", size(wc.mask, 2)/length("Alice in Wonderland"))
-initimage!(wc, "Alice in Wonderland")
+initword!(wc, "Alice in Wonderland")
 r = size(wc.mask, 2)/size(getimages(wc, "Alice in Wonderland"), 2) * 0.95
 setfontsizes!(wc, "Alice in Wonderland", r*size(wc.mask, 2)/length("Alice in Wonderland")) # set a big font size
-initimage!(wc, "Alice in Wonderland") # init it after adjust it's style
+initword!(wc, "Alice in Wonderland") # init it after adjust it's style
 setpositions!(wc, "Alice in Wonderland", reverse(size(wc.mask)) .÷ 2, type=setcenter!) # center it
 
 pin(wc, "Alice in Wonderland") do
-    initimages!(wc) #init inside `pin` to reset the size of other words
+    initwords!(wc) #init inside `pin` to reset the size of other words
     generate!(wc)
 end
 
@@ -348,7 +349,7 @@ wc = wordcloud(
     maskshape = box,
     masksize = (1000, 1000, 0),
     density=0.3,
-    run = initimages!
+    run = initwords!
 )
 
 pos = embedded
@@ -359,7 +360,7 @@ sz = collect(size(wc.mask))'
 pos = round.(Int, pos .* sz .+ sz ./ 2)
 
 setpositions!(wc, keys(wordvec)|>collect, eachrow(pos), type=setcenter!)
-setstate!(wc, :placement!)
+setstate!(wc, :placewords!)
 generate!(wc, teleporting=false)
 println("results are saved to embedding.png")
 paint(wc, "embedding.png")
@@ -391,8 +392,8 @@ wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     angles=0, density=0.55,
     maskshape=squircle, rt=2.5 * rand(),
-    run = initimages!)
-placement!(wc, style=:gathering, level=5, centerlargestword=true)
+    run = initwords!)
+placewords!(wc, style=:gathering, level=5, centerlargestword=true)
 pin(wc, "Alice") do #keep "Alice" in the center
     generate!(wc, teleporting=0.7) #don't teleport largest 30% words
 end
@@ -466,10 +467,10 @@ wc = wordcloud(
 )
 setangles!(wc, "julia", 0)
 # setangles!(wc, "function", 45)
-# initimage!(wc, "function")
+# initword!(wc, "function")
 setcolors!(wc, "julia", (0.796,0.235,0.20))
 # setfonts!(wc, "julia", "forte")
-initimage!(wc, "julia")
+initword!(wc, "julia")
 juliacircles = drawjuliacircle(getfontsizes(wc, "∴")|>round)
 setsvgimages!(wc, "∴", juliacircles) #replace image
 sz1 = size(getimages(wc, "∴"))
@@ -481,7 +482,7 @@ setpositions!(wc, "∴", (x1, y1))
 setpositions!(wc, "julia", (x1+sz1[2], y2))
 
 pin(wc, ["julia", "∴"]) do
-    placement!(wc)
+    placewords!(wc)
     generate!(wc, 2000)
 end
 println("results are saved to juliadoc.svg")
@@ -508,6 +509,36 @@ paint(wc, "lettermask.svg" , background=false)
 wc
 ```  
 ![](lettermask.svg)  
+# nomask
+The word clouds generated by WordCloud.jl are always with a mask, but we can imitate the no-mask-style through the following steps:
+* set a lower density
+* set the background color as the mask color
+* gathering style placement
+* generating with teleporting off
+```julia
+using WordCloud
+wc = wordcloud(
+    processtext(open(pkgdir(WordCloud)*"/res/Donald Trump's Inaugural Address.txt"), maxweight=1, minweight=0),
+    density = 0.3,
+    maskshape = box,
+    masksize = (800, 600, 0),
+    backgroundcolor = :maskcolor,
+    angles = rand((0, (0, 90))),
+    run = identity,
+)
+```  
+place words in the center of the background to prevent encountering the mask boundary
+```julia
+placewords!(wc, style=:gathering, reorder=WordCloud.shuffle, level=6, rt=1) # a proper level is important, and so is luck
+paint(wc, "nomask-placewords.svg")
+```  
+![](nomask-placewords.svg)
+prevent teleporting words to the surrounding blank space
+```julia
+generate!(wc, teleporting=false)
+paint(wc, "nomask.svg")
+```  
+![](nomask.svg)
 # outline
 ```julia
 using WordCloud
@@ -570,7 +601,7 @@ wc = wordcloud(
 * `words` & `weights` are just placeholders  
 * style arguments like `colors`, `angles` and `density` have no effect  
 
-And, you should manually initialize images for the placeholders, instead of calling `initimages!`  
+And, you should manually initialize images for the placeholders, instead of calling `initwords!`  
 ```julia
 dens = 0.6
 sz = 3expm1.(rand(l)) .+ 1
@@ -582,7 +613,7 @@ sz ./= √(sum(π * (sz ./ 2).^2 ./ dens) / prod(size(wc.mask))) # set a proper 
 shapes = WordCloud.svg2bitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l])
 setimages!(wc, :, shapes)
 
-setstate!(wc, :initimages!) #set the state flag after manual initialization
+setstate!(wc, :initwords!) #set the state flag after manual initialization
 # generate_animation!(wc, retry=1, outputdir="pattern_animation")
 generate!(wc, retry=1) #turn off rescale attempts. manually set images can't be rescaled
 println("results are saved to pattern.png")
