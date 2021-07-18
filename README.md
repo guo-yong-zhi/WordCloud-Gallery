@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.7.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.7.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
@@ -310,11 +310,11 @@ wc
 ```  
 ![](custom.svg)  
 # embedding
-The positions of words can be initialized with pre-trained word vectors.
+The positions of words can be initialized with pre-trained word vectors so that similar words will appear near each other.
 ### Words
 ```julia
 using WordCloud
-stwords = ["us", "will"];
+stwords = ["us"];
 words_weights = processtext(open(pkgdir(WordCloud)*"/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords)
 words_weights = Dict(zip(words_weights...))
 ```  
@@ -372,9 +372,11 @@ wc
 using WordCloud
 using HTTP
 
-url = "https://en.wikipedia.org/wiki/Julia_(programming_language)"
+url = "http://en.wikipedia.org/wiki/Special:random"
 try
-    content = HTTP.request("GET", url).body |> String
+    resp = HTTP.request("GET", url, redirect=true)
+    println(resp.request)
+    content = resp.body |> String
     wc = wordcloud(content|>html2text|>processtext)|>generate!
     println("results are saved to fromweb.png")
     paint(wc, "fromweb.png")
@@ -453,7 +455,7 @@ words, weights = processtext(maxnum=400, maxweight=1) do
         content = html2text(open(doc))
         countwords(content, counter=counter)
     end
-    counter |> casemerge!
+    counter
 end
 
 wc = wordcloud(
@@ -537,6 +539,7 @@ prevent teleporting words to the surrounding blank space
 ```julia
 generate!(wc, teleporting=false)
 paint(wc, "nomask.svg")
+wc
 ```  
 ![](nomask.svg)
 # outline
