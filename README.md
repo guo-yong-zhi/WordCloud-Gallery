@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.7.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.8.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation](#animation)
 - [benchmark](#benchmark)
@@ -30,7 +30,7 @@ wc = wordcloud(
     angles=(0, 90),
     density=0.5) |> generate!
 println("results are saved to alice.png")
-paint(wc, "alice.png", background=outline(wc.mask, color="purple", linewidth=2))
+paint(wc, "alice.png", background=outline(wc.mask, color="purple", linewidth=4))
 wc
 ```  
 ![alice](alice.png)  
@@ -69,7 +69,7 @@ wc2 = wordcloud(words, weights, mask=shape(ellipse, 500, 500, color=0.15), angle
 
 words = [Random.randstring(rand(1:8)) for i in 1:5000]
 weights = randexp(length(words)) .* 2000 .+ rand(20:100, length(words));
-wc3 = wordcloud(words, weights, mask=shape(box, 2000, 2000, 100, color=0.15), angles=(0, 90, 45))
+wc3 = wordcloud(words, weights, mask=shape(box, 2000, 2000, cornerradius=100, color=0.15), angles=(0, 90, 45))
 
 wcs = [wc1, wc1, wc2, wc3] # repeat wc1 to trigger compiling
 ts = [WordCloud.Stuffing.trainepoch_E!,WordCloud.Stuffing.trainepoch_EM!,
@@ -121,7 +121,7 @@ wcb = wordcloud(
     backgroundcolor=:maskcolor,
     maskcolor=getmaskcolor(wca),
     font=getparameter(wca, :font),
-    run=x -> nothing, # turn off the useless initword! and placewords! in advance
+    state=identity, # turn off the useless initword! and placewords! in advance
 )
 ```  
 Follow these steps to generate a wordcloud: initword! -> placewords! -> generate!
@@ -185,7 +185,7 @@ wca = wordcloud(
     angles=as,
     density=dens,
     backgroundcolor=:maskcolor,
-    run=x -> nothing, # turn off the initword! and placewords! in advance
+    state=identity, # turn off the initword! and placewords! in advance
 )
 wcb = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords),
@@ -196,7 +196,7 @@ wcb = wordcloud(
     backgroundcolor=:maskcolor,
     maskcolor=getmaskcolor(wca),
     font=getparameter(wca, :font),
-    run=x -> nothing, 
+    state=identity, 
 )
 ```  
 ### Make the same words the same style
@@ -285,7 +285,7 @@ wc = wordcloud(
     mask=shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     colors=:seaborn_icefire_gradient,
     angles=-90:90,
-    run=x -> x, # turn off the useless initword! and placewords! in advance
+    state=identity, # turn off the useless initword! and placewords! in advance
 )
 
 setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
@@ -335,7 +335,7 @@ wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     angles=0, density=0.55,
     maskshape=squircle, rt=2.5 * rand(),
-    run=initwords!)
+    state=initwords!)
 placewords!(wc, style=:gathering, level=5, centerlargestword=true)
 pin(wc, "Alice") do # keep "Alice" in the center
     generate!(wc, teleporting=0.7) # don't teleport largest 30% words
@@ -353,7 +353,7 @@ Sometimes you want a high-density output, and you may do it like this:
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
-    mask = shape(box, 400, 300, 10),
+    mask = shape(box, 400, 300, cornerradius=10),
     colors = :Dark2_3,
     angles = (0, 90),
     density = 0.7) |> generate!
@@ -363,7 +363,7 @@ But you may find that doesn't work. That is because there should be at least 1 p
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
-    mask=shape(box, 400 * 2, 300 * 2, 10 * 2),
+    mask=shape(box, 400 * 2, 300 * 2, cornerradius=10 * 2),
     colors=:Dark2_3,
     angles=(0, 90),
     density=0.7) |> generate!
@@ -403,7 +403,7 @@ wc = wordcloud(
     [words..., "∴"], # add a placeholder for julia-logo
     [weights..., weights[1]], 
     density=0.65,
-    mask=shape(box, 900, 300, 0, color=0.95),
+    mask=shape(box, 900, 300, cornerradius=0, color=0.95),
     colors=((0.796, 0.235, 0.20), (0.584, 0.345, 0.698), (0.22, 0.596, 0.149)),
     angles=(0, -45, 45),
     # font = "Verdana Bold",
@@ -502,10 +502,11 @@ wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), maxweight=1, minweight=0),
     density=0.3,
     maskshape=box,
-    masksize=(1200, 900, 0),
+    cornerradius=0,
+    masksize=(1200, 900),
     backgroundcolor=:maskcolor,
     angles=rand((0, (0, 90))),
-    run=identity,
+    state=identity,
 )
 ```  
 place words in the center of the background to prevent encountering the mask boundary
@@ -535,12 +536,12 @@ wc1 = wordcloud(
     maskshape = squircle, rt=0.5,
     masksize = (300, 200),
     maskcolor = "AliceBlue",
-    outline = 3, linecolor = "navy"
+    outline = 6, linecolor = "navy"
 ) |> generate!
 ```
 Or if you already have a SVG mask with outline, you should set a proper transparent region in `wordcloud`
 ```julia
-svgmask = shape(squircle, 300, 200, outline=3, linecolor="navy", color="AliceBlue")
+svgmask = shape(squircle, 300, 200, outline=6, linecolor="navy", color="AliceBlue")
 wc1 = wordcloud(
     words, weights,
     mask=svgmask,
@@ -559,7 +560,7 @@ wc2 = wordcloud(
     words, weights,
     mask=bitmapmask,
 ) |> generate!
-paint(wc2, "outline.png", background=outline(bitmapmask, color="navy", linewidth=3, smoothness=0.8))
+paint(wc2, "outline.png", background=outline(bitmapmask, color="navy", linewidth=6, smoothness=0.8))
 println("results are saved to outline.png")
 ```  
 ![](outline.png)  
@@ -576,7 +577,7 @@ l = 200
 wc = wordcloud(
     repeat(["placeholder"], l), repeat([1], l), 
     mask=shape(box, 400, 300, color=WordCloud.randommaskcolor(sc)),
-    run=x -> x)
+    state=identity)
 ```  
 * `words` & `weights` are just placeholders  
 * style arguments like `colors`, `angles` and `density` have no effect  
@@ -728,11 +729,12 @@ embedded = tsne(vectors', 2)
 wc = wordcloud(
     words_weights,
     maskshape=box,
-    masksize=(1000, 1000, 0),
+    cornerradius=0，
+    masksize=(1000, 1000),
     density=0.3,
     colors=0.3,
     backgroundcolor=:maskcolor,
-    run=initwords!,
+    state=initwords!,
     # angles = (0,45), font = "Helvetica thin", maskcolor=0.98,
 )
 
