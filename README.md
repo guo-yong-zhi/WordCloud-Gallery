@@ -1,7 +1,8 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.8.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
-- [animation](#animation)
+- [animation1](#animation1)
+- [animation2](#animation2)
 - [benchmark](#benchmark)
 - [compare](#compare)
 - [compare2](#compare2)
@@ -34,7 +35,40 @@ paint(wc, "alice.png", background=outline(wc.mask, color="purple", linewidth=4))
 wc
 ```  
 ![alice](alice.png)  
-# animation
+# animation1
+This animation shows how the initial layout is generated.
+```julia
+using WordCloud
+stopwords = WordCloud.stopwords_en ∪ ["said"]
+textfile = pkgdir(WordCloud)*"/res/alice.txt"
+wc = wordcloud(
+    processtext(open(textfile), stopwords=stopwords, maxnum=300), 
+    masksize = (300, 200),
+    outline = 3,
+    angles = 0:90,
+    state = initwords!)
+```  
+### uniform style
+```julia
+gifdirectory = "animation1/uniform"
+setpositions!(wc, :, (-1000,-1000))
+record(placewords!, wc, style=:uniform, outputdir=gifdirectory, filter=i->i%(2^(i÷100))==0, overwrite=true)
+```  
+![](animation1/uniform/animation.gif)  
+### gathering style
+```julia
+gifdirectory = "animation1/gathering"
+setpositions!(wc, :, (-1000,-1000))
+record(placewords!, wc, style=:gathering, outputdir=gifdirectory, filter=i->i%(2^(i÷100))==0, overwrite=true)
+```  
+![](animation1/gathering/animation.gif)  
+
+```julia
+println("results are saved in animation1")
+wc
+```  
+# animation2
+This animation shows the process of fitting the layout.
 ```julia
 using CSV
 using DataFrames
@@ -45,12 +79,12 @@ words = df[!, "Column2"]
 weights = df[!, "Column3"]
 
 wc = wordcloud(words, weights, density=0.65)
-gifdirectory = "guxiang_animation"
-generate_animation!(wc, 100, outputdir=gifdirectory)
-println("results are saved in guxiang_animation")
+gifdirectory = "animation2"
+record(generate!, wc, 100, outputdir=gifdirectory, overwrite=true)
+println("results are saved in animation2")
 wc
 ```  
-![](guxiang_animation/result.gif)  
+![](animation2/animation.gif)  
 # benchmark
 Test the performance of different trainers
 ```julia
@@ -141,7 +175,7 @@ keep(wcb, samewords) do
     centers = getpositions(wca, samewords, type=getcenter)
     setpositions!(wcb, samewords, centers, type=setcenter!) # manually initialize the position,
     setstate!(wcb, :placewords!) # and set the state flag
-    generate!(wcb, 1000, teleporting=false, retry=1) # turn off the teleporting; retry=1 means no rescale
+    generate!(wcb, 1000, reposition=false, retry=1) # turn off the reposition; retry=1 means no rescale
 end
 
 println("=pin same words=")
@@ -152,23 +186,22 @@ end
 
 if getstate(wcb) != :generate!
     println("=overall tuning=")
-    generate!(wcb, 1000, teleporting=setdiff(getwords(wcb), samewords), retry=2) # only teleport the unique words
+    generate!(wcb, 1000, reposition=setdiff(getwords(wcb), samewords), retry=2) # only teleport the unique words
 end
 
 ma = paint(wca)
 mb = paint(wcb)
 h, w = size(ma)
-try mkdir("address_compare") catch end
 println("results are saved in address_compare")
 WordCloud.save("address_compare/compare.png", [ma mb])
 gif = WordCloud.GIF("address_compare")
-record(wca, "Obama", gif)
-record(wcb, "Trump", gif)
+WordCloud.frame(wca, "Obama") |> gif
+WordCloud.frame(wcb, "Trump") |> gif
 WordCloud.Render.generate(gif, framerate=1)
 wca, wcb
 ```  
 ![](address_compare/compare.png)  
-![](address_compare/result.gif)  
+![](address_compare/animation.gif)  
 # compare2
 This is a more symmetrical and accurate way to generate comparison wordclouds, but it may be more time consuming.  
 ### Prepare two wordcloud objects
@@ -243,7 +276,7 @@ function pinfit!(wc, samewords, ep1, ep2)
     pin(wc, samewords) do
         fit!(wc, ep1)
     end
-    fit!(wc, ep2, teleporting=getparameter(wc, :uniquewords)) # only teleport the unique words
+    fit!(wc, ep2, reposition=getparameter(wc, :uniquewords)) # only teleport the unique words
 end
 pos = getpositions(wca, samewords, type=getcenter)
 while getparameter(wca, :epoch) < 2000 && getparameter(wcb, :epoch) < 2000
@@ -265,17 +298,16 @@ WordCloud.printcollisions(wcb)
 ma = paint(wca)
 mb = paint(wcb)
 h, w = size(ma)
-try mkdir("address_compare2") catch end
 println("results are saved in address_compare2")
 WordCloud.save("address_compare2/compare2.png", [ma mb])
 gif = WordCloud.GIF("address_compare2")
-record(wca, "Obama", gif)
-record(wcb, "Trump", gif)
+WordCloud.frame(wca, "Obama") |> gif
+WordCloud.frame(wcb, "Trump") |> gif
 WordCloud.Render.generate(gif, framerate=1)
 wca, wcb
 ```  
 ![](address_compare2/compare2.png)  
-![](address_compare2/result.gif)  
+![](address_compare2/animation.gif)  
 # custom
 ```julia
 using WordCloud
@@ -338,7 +370,7 @@ wc = wordcloud(
     state=initwords!)
 placewords!(wc, style=:gathering, level=5, centerlargestword=true)
 pin(wc, "Alice") do # keep "Alice" in the center
-    generate!(wc, teleporting=0.7) # don't teleport largest 30% words
+    generate!(wc, reposition=0.7) # don't teleport largest 30% words
 end
 println("results are saved to gathering.svg")
 paint(wc, "gathering.svg")
@@ -495,7 +527,7 @@ The word clouds generated by WordCloud.jl are always with a mask, but we can imi
 * set a lower density
 * set the background color as the mask color
 * gathering style placement
-* generating with teleporting off
+* generating with repositioning off
 ```julia
 using WordCloud
 wc = wordcloud(
@@ -515,9 +547,9 @@ placewords!(wc, style=:gathering, reorder=WordCloud.shuffle, level=6, rt=1) # a 
 paint(wc, "nomask-placewords.svg")
 ```  
 ![](nomask-placewords.svg)
-prevent teleporting words to the surrounding blank space
+prevent repositioning words to the surrounding blank space
 ```julia
-generate!(wc, teleporting=false)
+generate!(wc, reposition=false)
 paint(wc, "nomask.svg")
 wc
 ```  
@@ -595,7 +627,7 @@ shapes = WordCloud.svg2bitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color
 setimages!(wc, :, shapes)
 
 setstate!(wc, :initwords!) # set the state flag after manual initialization
-# generate_animation!(wc, retry=1, outputdir="pattern_animation")
+# record(generate!, wc, retry=1, outputdir="pattern_animation", overwrite=true)
 generate!(wc, retry=1) # turn off rescale attempts. manually set images can't be rescaled
 println("results are saved to pattern.png")
 paint(wc, "pattern.png")
@@ -729,8 +761,8 @@ embedded = tsne(vectors', 2)
 wc = wordcloud(
     words_weights,
     maskshape=box,
-    cornerradius=0，
     masksize=(1000, 1000),
+    cornerradius=0,
     density=0.3,
     colors=0.3,
     backgroundcolor=:maskcolor,
@@ -748,7 +780,7 @@ pos = round.(Int, pos .* sz0 .+ sz ./ 2)
 
 setpositions!(wc, words, eachrow(pos), type=setcenter!)
 setstate!(wc, :placewords!)
-generate!(wc, teleporting=false)
+generate!(wc, reposition=false)
 paint(wc, "semantic_embedding.png")
 ```  
 ![](semantic_embedding.png)  
