@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -366,7 +366,7 @@ using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     angles=0, density=0.55,
-    maskshape=squircle, rt=2.5 * rand(),
+    mask=squircle, rt=2.5 * rand(),
     state=initwords!)
 placewords!(wc, style=:gathering, level=5, centerlargestword=true)
 pin(wc, "Alice") do # keep "Alice" in the center
@@ -478,6 +478,7 @@ wc = wordcloud(
         angles=0,
         colors=("#006BB0", "#EFA90D", "#1D1815", "#059341", "#DC2F1F"),
         density=0.55,
+        spacing=0,
         ) |> generate!
 println("results are saved to lettermask.svg")
 paint(wc, "lettermask.svg" , background=false)
@@ -533,7 +534,7 @@ using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), maxweight=1, minweight=0),
     density=0.3,
-    maskshape=box,
+    mask=box,
     cornerradius=0,
     masksize=(1200, 900),
     backgroundcolor=:maskcolor,
@@ -565,18 +566,18 @@ You can directly set the `outline` and `maskcolor` in `wordcloud`
 ```julia
 wc1 = wordcloud(
     words, weights,
-    maskshape = squircle, rt=0.5,
+    mask = squircle, rt=0.5,
     masksize = (300, 200),
     maskcolor = "AliceBlue",
     outline = 6, linecolor = "navy"
 ) |> generate!
-```
+```  
 Or if you already have a SVG mask with outline, you should set a proper transparent region in `wordcloud`
 ```julia
 svgmask = shape(squircle, 300, 200, outline=6, linecolor="navy", color="AliceBlue")
 wc1 = wordcloud(
     words, weights,
-    mask=svgmask,
+    mask = svgmask,
     transparent=c -> c != WordCloud.torgba("AliceBlue"), # the outline should be regarded as transparent too
 ) |> generate!
 
@@ -590,7 +591,7 @@ If you already have a bitmap mask without outline, you can outline it before pai
 bitmapmask = WordCloud.svg2bitmap(shape(squircle, 300, 200, color="AliceBlue", backgroundsize=(312, 212)))
 wc2 = wordcloud(
     words, weights,
-    mask=bitmapmask,
+    mask = bitmapmask,
 ) |> generate!
 paint(wc2, "outline.png", background=outline(bitmapmask, color="navy", linewidth=6, smoothness=0.8))
 println("results are saved to outline.png")
@@ -760,7 +761,7 @@ embedded = tsne(vectors', 2)
 ```julia
 wc = wordcloud(
     words_weights,
-    maskshape=box,
+    mask=box,
     masksize=(1000, 1000),
     cornerradius=0,
     density=0.3,
