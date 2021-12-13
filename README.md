@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -52,14 +52,14 @@ wc = wordcloud(
 ```julia
 gifdirectory = "animation1/uniform"
 setpositions!(wc, :, (-1000,-1000))
-record(placewords!, wc, style=:uniform, outputdir=gifdirectory, filter=i->i%(2^(i÷100))==0, overwrite=true)
+@record gifdirectory overwrite=true filter=i->i%(2^(i÷100))==0 placewords!(wc, style=:uniform)
 ```  
 ![](animation1/uniform/animation.gif)  
 ### gathering style
 ```julia
 gifdirectory = "animation1/gathering"
 setpositions!(wc, :, (-1000,-1000))
-record(placewords!, wc, style=:gathering, outputdir=gifdirectory, filter=i->i%(2^(i÷100))==0, overwrite=true)
+@record gifdirectory overwrite=true filter=i->i%(2^(i÷100))==0 placewords!(wc, style=:gathering)
 ```  
 ![](animation1/gathering/animation.gif)  
 
@@ -80,7 +80,7 @@ weights = df[!, "Column3"]
 
 wc = wordcloud(words, weights, density=0.65)
 gifdirectory = "animation2"
-record(generate!, wc, 100, outputdir=gifdirectory, overwrite=true)
+@record gifdirectory overwrite=true generate!(wc, 100)
 println("results are saved in animation2")
 wc
 ```  
@@ -469,7 +469,7 @@ wc
 # lettermask
 ```julia
 using WordCloud
-mask = rendertext("World", 1000, border=10, color=0.9, backgroundcolor=0.98, type=:svg, font="Georgia-Bold")
+mask = rendertext("World", 1000, border=10, color=0.9, backgroundcolor=0.98, type=:svg, font="Sans Bold")
 words = repeat(["we", "are", "the", "world"], 150)
 weights = repeat([1], length(words))
 wc = wordcloud(
@@ -478,7 +478,6 @@ wc = wordcloud(
         angles=0,
         colors=("#006BB0", "#EFA90D", "#1D1815", "#059341", "#DC2F1F"),
         density=0.55,
-        spacing=0,
         ) |> generate!
 println("results are saved to lettermask.svg")
 paint(wc, "lettermask.svg" , background=false)
@@ -628,7 +627,7 @@ shapes = WordCloud.svg2bitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color
 setimages!(wc, :, shapes)
 
 setstate!(wc, :initwords!) # set the state flag after manual initialization
-# record(generate!, wc, retry=1, outputdir="pattern_animation", overwrite=true)
+# @record "pattern_animation" overwrite=true generate!(wc, retry=1)
 generate!(wc, retry=1) # turn off rescale attempts. manually set images can't be rescaled
 println("results are saved to pattern.png")
 paint(wc, "pattern.png")
