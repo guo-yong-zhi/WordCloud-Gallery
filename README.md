@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.3).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -10,6 +10,7 @@ This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), whi
 - [fromweb](#fromweb)
 - [gathering](#gathering)
 - [highdensity](#highdensity)
+- [hyperlink](#hyperlink)
 - [juliadoc](#juliadoc)
 - [lettermask](#lettermask)
 - [logo](#logo)
@@ -20,6 +21,7 @@ This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), whi
 - [random](#random)
 - [recolor](#recolor)
 - [semantic](#semantic)
+- [svgconfig](#svgconfig)
 - [中文](#中文)
 # alice
 ```julia
@@ -313,7 +315,7 @@ wca, wcb
 using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"], maxweight=1, maxnum=300), 
-    # mask = padding(WordCloud.svg2bitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
+    # mask = padding(WordCloud.tobitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
     mask=shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     colors=:seaborn_icefire_gradient,
     angles=-90:90,
@@ -407,6 +409,21 @@ println("results are saved to highdensity.png")
 wc
 ```  
 ![highdensity](highdensity.png)  
+# hyperlink
+Hyperlinks can be attached with wrapper SVG tag pairs like `<a href="https://www.google.com/search?q=$w">` and `</a>`. 
+The function `configsvgimages!` provides this capability.
+```julia
+using WordCloud
+push!(WordCloud.stopwords, "said")
+wc = wordcloud(open(pkgdir(WordCloud) * "/res/alice.txt")) |> generate!
+for w in getwords(wc)
+    configsvgimages!(wc, w, wrappers="a"=>("href", "https://www.google.com/search?q=$w"))
+end
+println("results are saved to hyperlink.svg")
+paint(wc, "hyperlink.svg")
+wc
+```  
+![hyperlink](hyperlink.svg)  
 # juliadoc
 ```julia
 using WordCloud
@@ -587,7 +604,7 @@ println("results are saved to outline.svg")
 ### Bitmap
 If you already have a bitmap mask without outline, you can outline it before painting
 ```julia
-bitmapmask = WordCloud.svg2bitmap(shape(squircle, 300, 200, color="AliceBlue", backgroundsize=(312, 212)))
+bitmapmask = WordCloud.tobitmap(shape(squircle, 300, 200, color="AliceBlue", backgroundsize=(312, 212)))
 wc2 = wordcloud(
     words, weights,
     mask = bitmapmask,
@@ -623,7 +640,7 @@ sz ./= √(sum(π * (sz ./ 2).^2 ./ dens) / prod(size(wc.mask))) # set a proper 
 # shapes = [shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l]
 # setsvgimages!(wc, :, shapes)
 ## bitmap version
-shapes = WordCloud.svg2bitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l])
+shapes = WordCloud.tobitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color=rand(sc)) for i in 1:l])
 setimages!(wc, :, shapes)
 
 setstate!(wc, :initwords!) # set the state flag after manual initialization
@@ -809,6 +826,47 @@ paint(wc, "semantic_clustering.png")
 ```julia
 wc
 ```  
+# svgconfig
+```julia
+using WordCloud
+```  
+### Generate a word cloud first
+```julia
+push!(WordCloud.stopwords, "said")
+wc = wordcloud(open(pkgdir(WordCloud) * "/res/alice.txt")) |> generate!
+```  
+### Add hyperlinks for each tag
+This can be done by adding a wrapper SVG node `<a>`
+* SVG ElementNode: `<a href="https://www.google.com/search?q=$w">` and `</a>`
+```julia
+configsvgimages!(wc, wrappers = ["a" => ("href" => "https://www.google.com/search?q=$w") for w in getwords(wc)])
+```  
+### Add flicker, rotation animations and tooltips
+These things can be done by adding child nodes `<animate>`, `<animateTransform>` and `<title>`.
+* SVG ElementNode: `<animate attributeName="opacity" values="1;0.5;1" dur="6s" repeatCount="indefinite"/>`
+* SVG ElementNode: `<animateTransform attributeName="transform" type="rotate" from="0 $(w/2) $(h/2)" to="360 $x $y" dur="6s" repeatCount="indefinite"/>`
+* SVG TextNode: `<title>$word</title>`
+```julia
+flicker = "animate" => ["attributeName" => "opacity", "values" => "1;0.5;1", "dur" => "6s", "repeatCount" => "indefinite"]
+h, w = getmask(wc) |> size
+for word in getwords(wc)
+    x, y = getpositions(wc, word, type = getcenter)
+    rotation = "animateTransform" => [
+        "attributeName" => "transform",
+        "type" => "rotate",
+        "from" => "0 $(w/2) $(h/2)",
+        "to" => "360 $x $y",
+        "dur" => "6s",
+        "repeatCount" => "indefinite"
+    ]
+    title = "title" => word
+    configsvgimages!(wc, word, children = (flicker, rotation, title))
+end
+println("results are saved to svgconfig.svg")
+paint(wc, "svgconfig.svg")
+wc
+```  
+![svgconfig](svgconfig.svg)  
 # 中文
 中文需要分词，须先配置python环境和安装结巴分词  
 ### 安装PyCall  
