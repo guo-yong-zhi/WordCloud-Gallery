@@ -80,9 +80,9 @@ df = CSV.File(pkgdir(WordCloud) * "/res/guxiang_frequency.txt", header=false) |>
 words = df[!, "Column2"]
 weights = df[!, "Column3"]
 
-wc = wordcloud(words, weights, density=0.65)
+wc = wordcloud(words, weights, density=0.6)
 gifdirectory = "animation2"
-@record gifdirectory overwrite=true generate!(wc, 100)
+@record gifdirectory overwrite=true generate!(wc, 100, optimiser=WordCloud.Momentum())
 println("results are saved in animation2")
 wc
 ```  
@@ -645,7 +645,7 @@ setimages!(wc, :, shapes)
 
 setstate!(wc, :initwords!) # set the state flag after manual initialization
 # @record "pattern_animation" overwrite=true generate!(wc, retry=1)
-generate!(wc, retry=1) # turn off rescale attempts. manually set images can't be rescaled
+generate!(wc, retry=1, optimiser=WordCloud.Momentum(η=1/8)) # turn off rescale attempts. manually set images can't be rescaled
 println("results are saved to pattern.png")
 paint(wc, "pattern.png")
 wc
