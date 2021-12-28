@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.3).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.4).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -109,7 +109,7 @@ wc3 = wordcloud(words, weights, mask=shape(box, 2000, 2000, cornerradius=100, co
 
 wcs = [wc1, wc1, wc2, wc3] # repeat wc1 to trigger compiling
 ts = [WordCloud.Stuffing.trainepoch_E!,WordCloud.Stuffing.trainepoch_EM!,
-WordCloud.Stuffing.trainepoch_EM2!,WordCloud.Stuffing.trainepoch_EM3!,
+WordCloud.Stuffing.trainepoch_EM2!,WordCloud.Stuffing.trainepoch_EM3!,WordCloud.Stuffing.trainepoch_D!,
 WordCloud.Stuffing.trainepoch_P!,WordCloud.Stuffing.trainepoch_P2!,WordCloud.Stuffing.trainepoch_Px!]
 es = [[] for i in 1:length(wcs)]
 for (i, wc) in enumerate(wcs)
