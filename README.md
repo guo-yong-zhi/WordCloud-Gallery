@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.9.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -138,6 +138,7 @@ stwords = ["us"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() # :Set1_8
 as = WordCloud.randomangles() # (0,90,45,-45)
+fs = WordCloud.randomfonts()
 dens = 0.5 # not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
@@ -145,6 +146,7 @@ wca = wordcloud(
     angles=as,
     density=dens,
     backgroundcolor=:maskcolor,
+    fonts=fs,
     ) |> generate!
 ```  
 ### Then generate the wordcloud on the right      
@@ -158,7 +160,7 @@ wcb = wordcloud(
     density=dens,
     backgroundcolor=:maskcolor,
     maskcolor=getmaskcolor(wca),
-    font=getparameter(wca, :font),
+    fonts=fs,
     state=identity, # turn off the useless initword! and placewords! in advance
 )
 ```  
@@ -215,6 +217,7 @@ using WordCloud
 stwords = ["us"];
 cs = WordCloud.randomscheme() # :Set1_8#
 as = WordCloud.randomangles() # (0,90,45,-45)#
+fs = WordCloud.randomfonts()
 dens = 0.5 # not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
@@ -222,6 +225,7 @@ wca = wordcloud(
     angles=as,
     density=dens,
     backgroundcolor=:maskcolor,
+    fonts=fs,
     state=identity, # turn off the initword! and placewords! in advance
 )
 wcb = wordcloud(
@@ -232,7 +236,7 @@ wcb = wordcloud(
     density=dens,
     backgroundcolor=:maskcolor,
     maskcolor=getmaskcolor(wca),
-    font=getparameter(wca, :font),
+    fonts=fs,
     state=identity, 
 )
 ```  
@@ -457,7 +461,7 @@ wc = wordcloud(
     mask=shape(box, 900, 300, cornerradius=0, color=0.95),
     colors=((0.796, 0.235, 0.20), (0.584, 0.345, 0.698), (0.22, 0.596, 0.149)),
     angles=(0, -45, 45),
-    # font = "Verdana Bold",
+    # fonts = "Verdana Bold",
 )
 setangles!(wc, "julia", 0)
 # setangles!(wc, "function", 45)
@@ -531,7 +535,7 @@ wc = wordcloud(
     transparent=(0, 0, 0, 0),
     colors=1,
     angles=-90:0,
-    font="JuliaMono Black",
+    fonts="JuliaMono Black",
     density=0.7,
     )
 generate!(wc, 2000, retry=1)
@@ -786,7 +790,7 @@ wc = wordcloud(
     colors=0.3,
     backgroundcolor=:maskcolor,
     state=initwords!,
-    # angles = (0,45), font = "Helvetica thin", maskcolor=0.98,
+    # angles = (0,45), fonts = "Helvetica thin", maskcolor=0.98,
 )
 
 pos = embedded
