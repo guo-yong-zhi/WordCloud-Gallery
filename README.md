@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -172,6 +172,7 @@ println(length(samewords), " same words")
 for w in samewords
     setcolors!(wcb, w, getcolors(wca, w))
     setangles!(wcb, w, getangles(wca, w))
+    setfonts!(wcb, w, getfonts(wca, w))
 end
 initwords!(wcb)
 
@@ -251,6 +252,7 @@ setparameter!(wcb, setdiff(getwords(wcb), samewords), :uniquewords)
 for w in samewords
     setcolors!(wcb, w, getcolors(wca, w))
     setangles!(wcb, w, getangles(wca, w))
+    setfonts!(wcb, w, getfonts(wca, w))
 end
 ```  
 ### Put the same words at same position
@@ -359,14 +361,14 @@ try
     println(resp.request)
     content = resp.body |> String
     wc = wordcloud(content |> html2text |> processtext) |> generate!
-    println("results are saved to fromweb.png")
-    paint(wc, "fromweb.png")
+    println("results are saved to fromweb.svg")
+    paint(wc, "fromweb.svg")
     wc
 catch e
     println(e)
 end
 ```  
-![](fromweb.png)  
+![](fromweb.svg)  
 # gathering
 Big words will be placed closer to the center
 ```julia
@@ -462,6 +464,7 @@ wc = wordcloud(
     colors=((0.796, 0.235, 0.20), (0.584, 0.345, 0.698), (0.22, 0.596, 0.149)),
     angles=(0, -45, 45),
     # fonts = "Verdana Bold",
+    maxfontsize = 300,
 )
 setangles!(wc, "julia", 0)
 # setangles!(wc, "function", 45)
