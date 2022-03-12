@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -299,7 +299,7 @@ while getparameter(wca, :epoch) < 2000 && getparameter(wcb, :epoch) < 2000
         break
     end
 end
-println("Takes $(getparameter(wca, :epoch)) and $(getparameter(wca, :epoch)) epochs")
+println("Takes $(getparameter(wca, :epoch)) and $(getparameter(wcb, :epoch)) epochs")
 WordCloud.printcollisions(wca)
 WordCloud.printcollisions(wcb)
 ```  
