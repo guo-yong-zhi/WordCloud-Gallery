@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.3).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -139,7 +139,7 @@ println("==Obama's==")
 cs = WordCloud.randomscheme() # :Set1_8
 as = WordCloud.randomangles() # (0,90,45,-45)
 fs = WordCloud.randomfonts()
-dens = 0.5 # not too high
+dens = 0.45 # not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
     colors=cs,
@@ -219,7 +219,7 @@ stwords = ["us"];
 cs = WordCloud.randomscheme() # :Set1_8#
 as = WordCloud.randomangles() # (0,90,45,-45)#
 fs = WordCloud.randomfonts()
-dens = 0.5 # not too high
+dens = 0.45 # not too high
 wca = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
     colors=cs,
@@ -395,17 +395,19 @@ Sometimes you want a high-density output, and you may do it like this:
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
-    mask = shape(box, 400, 300, cornerradius=10),
+    mask = shape(box, 500, 400, cornerradius=10),
     colors = :Dark2_3,
-    angles = (0, 90),
+    angles = (0, 90), #spacing = 1,
     density = 0.7) |> generate!
 paint(wc, "highdensity.png")
 ```
-But you may find that doesn't work. That is because there should be at least 1 pixel gap between two words, which is controlled by the `spacing` parameter (default 1) in `wordcloud`. While, when the picture is small, 1 pixel is expensive. So, that can be done as follows:
+But you may find that doesn't work. 
+This is because the gap between two words is at least 1 pixel by default, which is controlled by the parameter `spacing` of `wordcloud`. 
+While, when the picture is small, 1 pixel is relatively more expensive. You can set `spacing=0`. Or alternatively, this can be mitigated with a larger picture:
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
-    mask=shape(box, 400 * 2, 300 * 2, cornerradius=10 * 2),
+    mask=shape(box, 500 * 2, 400 * 2, cornerradius=10 * 2),
     colors=:Dark2_3,
     angles=(0, 90),
     density=0.7) |> generate!
@@ -459,7 +461,7 @@ end
 wc = wordcloud(
     [words..., "∴"], # add a placeholder for julia-logo
     [weights..., weights[1]], 
-    density=0.65,
+    density=0.55,
     mask=shape(box, 900, 300, cornerradius=0, color=0.95),
     colors=((0.796, 0.235, 0.20), (0.584, 0.345, 0.698), (0.22, 0.596, 0.149)),
     angles=(0, -45, 45),
@@ -653,20 +655,21 @@ shapes = WordCloud.tobitmap.([shape(ellipse, round(sz[i]), round(sz[i]), color=r
 setimages!(wc, :, shapes)
 
 setstate!(wc, :initwords!) # set the state flag after manual initialization
-# @record "pattern_animation" overwrite=true generate!(wc, retry=1)
-generate!(wc, retry=1, optimiser=WordCloud.Momentum(η=1/8)) # turn off rescale attempts. manually set images can't be rescaled
+@record "pattern_animation" overwrite=true generate!(wc, retry=1, optimiser=WordCloud.Momentum(η=1/8))
+# generate!(wc, retry=1, optimiser=WordCloud.Momentum(η=1/8)) # turn off rescale attempts. manually set images can't be rescaled
 println("results are saved to pattern.png")
 paint(wc, "pattern.png")
 wc
 ```  
 ![](pattern.png)  
+![](pattern_animation/animation.gif)  
 # qianziwen
 ```julia
 using WordCloud
 words = "天地玄黄宇宙洪荒日月盈昃辰宿列张寒来暑往秋收冬藏闰余成岁律吕调阳云腾致雨露结为霜金生丽水玉出昆冈剑号巨阙珠称夜光果珍李柰菜重芥姜海咸河淡鳞潜羽翔龙师火帝鸟官人皇始制文字乃服衣裳推位让国有虞陶唐吊民伐罪周发殷汤坐朝问道垂拱平章"
 words = [string(c) for c in words]
 weights = rand(length(words)).^2 .* 100 .+ 30
-wc = wordcloud(words, weights)
+wc = wordcloud(words, weights, spacing=0, density=0.75)
 generate!(wc)
 ```  
 # random
@@ -697,7 +700,7 @@ wc = wordcloud(
     mask=background,
     colors="LimeGreen",
     angles=-30,
-    density=0.45,
+    density=0.4,
     transparent=istrans,
     spacing=1,
 ) |> generate!;
