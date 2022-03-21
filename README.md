@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.3).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -118,7 +118,7 @@ for (i, wc) in enumerate(wcs)
     println("\n\n", "*"^10, "wordcloud - $(length(wc)) words on mask$(size(wc.mask))", "*"^10)
     for (j, t) in enumerate(ts)
         println("\n", i - 1, "==== ", j, "/", length(ts), " ", nameof(t))
-        placewords!(wc)
+        placewords!(wc, style=:uniform)
         @time e = @elapsed generate!(wc, trainer=t, retry=1)
         push!(es[i], "$(nameof(t)) - $(getparameter(wc, :epoch))" * (getstate(wc) == :generate! ? "✔ " : "✘ ") => e)
     end
@@ -147,6 +147,7 @@ wca = wordcloud(
     density=dens,
     backgroundcolor=:maskcolor,
     fonts=fs,
+    style=:uniform,
     ) |> generate!
 ```  
 ### Then generate the wordcloud on the right      
@@ -187,7 +188,7 @@ end
 
 println("=pin same words=")
 pin(wcb, samewords) do
-    placewords!(wcb)
+    placewords!(wcb, style=:uniform)
     generate!(wcb, 1000, retry=1) # allow teleport but don‘t allow rescale
 end
 
@@ -260,16 +261,16 @@ end
 initwords!(wca)
 initwords!(wcb)
 keep(wca, samewords) do
-    placewords!(wca)
+    placewords!(wca, style=:uniform)
     fit!(wca, 1000)
 end
 pin(wca, samewords) do
-    placewords!(wca) # place other words
+    placewords!(wca, style=:uniform) # place other words
 end
 centers = getpositions(wca, samewords, type=getcenter)
 setpositions!(wcb, samewords, centers, type=setcenter!) # manually initialize the position,
 pin(wcb, samewords) do
-    placewords!(wcb) # place other words
+    placewords!(wcb, style=:uniform) # place other words
 end
 ```  
 ### Fit them all
@@ -378,7 +379,7 @@ wc = wordcloud(
     angles=0, density=0.55,
     mask=squircle, rt=2.5 * rand(),
     state=initwords!)
-placewords!(wc, style=:gathering, level=5, centerlargestword=true)
+placewords!(wc, style=:gathering, level=5, centeredword=true)
 pin(wc, "Alice") do # keep "Alice" in the center
     generate!(wc, reposition=0.7) # don't teleport largest 30% words
 end
@@ -632,7 +633,7 @@ The [engine](https://github.com/guo-yong-zhi/Stuffing.jl) is designed for genera
 ```julia
 using WordCloud
 
-sc = WordCloud.randomscheme()
+sc = WordCloud.randomscheme() |> unique #unique makes Int -> Vector{Int}
 l = 200
 wc = wordcloud(
     repeat(["placeholder"], l), repeat([1], l), 
@@ -924,6 +925,7 @@ These two functions are ussed to forcing large words to the center, but are not 
 ```julia
 wc = wordcloud(df.country, 1, angles=0)
 gif = WordCloud.GIF("series")
+println("results are saved in series")
 @assert length(unique(df[!, 1])) == length(df[!, 1])
 initialized = false
 for name in names(df)[2:end] #the first column is word list
