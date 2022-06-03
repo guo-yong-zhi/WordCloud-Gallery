@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.5).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.10.7).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -685,13 +685,14 @@ wordcloud(words, weights) |> generate!
 ```julia
 using WordCloud
 using Random
-
-background = loadmask(pkgdir(WordCloud) * "/res/butterfly.png")
+```  
+![butterfly.png](https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/res/butterfly.png) 
+```julia
 istrans = c -> maximum(c[1:3]) * (c[4] / 255) < 128
-mask = WordCloud.imagemask(background, istrans)
+background, mask = loadmask(pkgdir(WordCloud) * "/res/butterfly.png", transparent=istrans, return_bitmask=true)
 showmask(background, mask, highlight=(1, 0, 0, 0.7))
 ```  
-`showmask` might be helpful to find a proper `istrans` function
+`showmask` might be helpful to find a proper `istrans` function. `using Images` may be required.
 ```julia
 words = [randstring(1) for i in 1:600]
 weights = randexp(length(words)) .+ 1
