@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.11.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.11.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -164,7 +164,7 @@ wcb = wordcloud(
     backgroundcolor=:maskcolor,
     maskcolor=getmaskcolor(wca),
     fonts=fs,
-    state=identity, # turn off the useless initword! and placewords! in advance
+    state=identity, # disables the useless initword! and placewords! in advance
 )
 ```  
 Follow these steps to generate a wordcloud: initword! -> placewords! -> generate!
@@ -185,18 +185,18 @@ keep(wcb, samewords) do
     centers = getpositions(wca, samewords, type=getcenter)
     setpositions!(wcb, samewords, centers, type=setcenter!) # manually initialize the position,
     setstate!(wcb, :placewords!) # and set the state flag
-    generate!(wcb, 1000, reposition=false, retry=1) # turn off the reposition; retry=1 means no rescale
+    generate!(wcb, 1000, reposition=false, retry=1) # disables repositioning; retry=1 means no rescale
 end
 
 println("=pin same words=")
 pin(wcb, samewords) do
     placewords!(wcb, style=:uniform)
-    generate!(wcb, 1000, retry=1) # allow teleport but don‘t allow rescale
+    generate!(wcb, 1000, retry=1) # enables repositioning while disabling rescaling
 end
 
 if getstate(wcb) != :generate!
     println("=overall tuning=")
-    generate!(wcb, 1000, reposition=setdiff(getwords(wcb), samewords), retry=2) # only teleport the unique words
+    generate!(wcb, 1000, reposition=setdiff(getwords(wcb), samewords), retry=2) # only reposition the unique words
 end
 
 ma = paint(wca)
@@ -290,7 +290,7 @@ function pinfit!(wc, samewords, ep1, ep2)
     pin(wc, samewords) do
         fit!(wc, ep1)
     end
-    fit!(wc, ep2, reposition=getparameter(wc, :uniquewords)) # only teleport the unique words
+    fit!(wc, ep2, reposition=getparameter(wc, :uniquewords)) # only reposition the unique words
 end
 pos = getpositions(wca, samewords, type=getcenter)
 while getparameter(wca, :epoch) < 2000 && getparameter(wcb, :epoch) < 2000
@@ -375,9 +375,8 @@ end
 ```  
 ![](fromweb.svg)  
 # gathering
-Big words will be placed closer to the center
+By setting `style=:gathering` in the `placewords!` function, larger words will be positioned closer to the center.
 ```julia
-using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     angles=0, density=0.55,
@@ -385,7 +384,7 @@ wc = wordcloud(
     state=initwords!)
 placewords!(wc, style=:gathering, level=5, centralword=true)
 pin(wc, "Alice") do # keep "Alice" in the center
-    generate!(wc, reposition=0.7) # don't teleport largest 30% words
+    generate!(wc, reposition=0.7) # exclude the top 30% of words from repositioning
 end
 println("results are saved to gathering.svg")
 paint(wc, "gathering.svg")
@@ -396,19 +395,19 @@ wc
 ```julia
 using WordCloud
 ```  
-Sometimes you want a high-density output, and you may do it like this:
+In certain scenarios, there might be a need for generating a high-density output, and you might attempt to achieve it using the following code:
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
     mask = shape(box, 500, 400, cornerradius=10),
     colors = :Dark2_3,
-    angles = (0, 90), #spacing = 2,
+    angles = (0, 90), # spacing = 2,
     density = 0.7) |> generate!
 paint(wc, "highdensity.png")
 ```
-But you may find that doesn't work. 
-This is because the minimum gap between two words is set to 2 pixel, which is controlled by the parameter `spacing` of `wordcloud`. 
-While, when the picture is small, 1 pixel is relatively more expensive. You can set `spacing=0` or `spacing=1`. Or alternatively, this can be mitigated with a larger picture:
+However, there are situations where it fails to function as intended. 
+This is mainly because the minimum gap between two words is set to 2 pixels, controlled by the `spacing` parameter of the `wordcloud` function.  
+In cases where the image is small, the cost of 2 pixels becomes relatively higher. To address this issue, you have the option to set `spacing=0` or `spacing=1`. Alternatively, increasing the image size can also alleviate the issue.
 ```julia
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
@@ -626,7 +625,7 @@ The [engine](https://github.com/guo-yong-zhi/Stuffing.jl) is designed for genera
 ```julia
 using WordCloud
 
-sc = WordCloud.randomscheme() |> unique #unique makes Int -> Vector{Int}
+sc = WordCloud.randomscheme() |> unique # unique makes Int -> Vector{Int}
 l = 200
 wc = wordcloud(
     repeat(["placeholder"], l), repeat([1], l), 
@@ -843,7 +842,7 @@ We use the GDP of countries from 2000 to 2020 as an example.
 ```julia
 using WorldBankData
 using DataFrames
-df0 = wdi("NY.GDP.MKTP.CD", "all", 2000, 2020) #GDP from 2000 to 2020
+df0 = wdi("NY.GDP.MKTP.CD", "all", 2000, 2020) # GDP from 2000 to 2020
 df0.year = round.(Int, df0[!, :year])
 df = unstack(df0, :year, :NY_GDP_MKTP_CD)
 country_groups = ["XC", "EU", "XE", "XD", "XF", "ZB", "ZT", "XH", "XI", "XG", "ZJ", "XJ", "XL", "XO", 
@@ -851,8 +850,8 @@ country_groups = ["XC", "EU", "XE", "XD", "XF", "ZB", "ZT", "XH", "XI", "XG", "Z
 countrymask = .!occursin.(r"\d" , df.iso2c) .& .!in.(df.iso2c, Ref(country_groups))
 df = df[countrymask, 2:end]
 df[!, 2:end] .= sqrt.(df[!, 2:end] ./ length.(df.country))
-df.country = replace.(df.country, " "=>"\n") #some names are too long
-for i in 1:size(df, 1) #interpolation, fill missing
+df.country = replace.(df.country, " "=>"\n") # some names are too long
+for i in 1:size(df, 1) # interpolation, fill missing
     for j in 3:size(df, 2)
         if ismissing(df[i, j])
             df[i, j] = df[i, j-1]
@@ -884,7 +883,7 @@ gif = WordCloud.GIF("series")
 println("results are saved in series")
 @assert length(unique(df[!, 1])) == length(df[!, 1])
 initialized = false
-for name in names(df)[2:end] #the first column is word list
+for name in names(df)[2:end] # the first column is word list
     words = df[!, 1]
     weights = df[!, name]
     missingmask = ismissing.(weights)
