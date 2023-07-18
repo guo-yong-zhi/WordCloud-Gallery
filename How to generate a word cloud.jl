@@ -29,6 +29,9 @@ md"""
 Word cloud (tag cloud or wordle) is a novelty visual representation of text data. The importance of each word is shown with its font size, position, or color. 
 """
 
+# ╔═╡ f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
+
 # ╔═╡ a186a333-3f34-4973-a1b0-d7cdc6394c3c
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/main/animation1/uniform/animation.gif?raw=true")
 
@@ -72,7 +75,7 @@ Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png
 begin
     logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=90></a>"""
 
-    md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))"""
+    md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*The forms of textual data are various.*"""
 end
 
 # ╔═╡ 6b7b1da7-03dc-4815-9abf-b8eea410d2fd
