@@ -29,14 +29,17 @@ md"""
 Word cloud (tag cloud or wordle) is a novelty visual representation of text data. The importance of each word is shown with its font size, position, or color. 
 """
 
-# ╔═╡ f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
-Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
-
 # ╔═╡ a186a333-3f34-4973-a1b0-d7cdc6394c3c
-Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/main/animation1/uniform/animation.gif?raw=true")
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform/animation.gif?raw=true")
+
+# ╔═╡ b5c9984a-3829-4fd8-9722-99f45806745b
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering/animation.gif?raw=true")
+
+# ╔═╡ 024a576b-a38d-4eac-bf90-537c46a0be90
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering_fit/animation.gif?raw=true")
 
 # ╔═╡ f2dda08e-ad06-49a6-b867-df2a16393a36
-Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/main/animation2/animation.gif?raw=true")
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform_fit/animation.gif?raw=true")
 
 # ╔═╡ 13d75a82-7983-44c0-b367-563ef338a066
 md"""
@@ -485,6 +488,9 @@ begin
     end
 end
 
+
+# ╔═╡ f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1683,6 +1689,8 @@ version = "3.5.0+0"
 # ╔═╡ Cell order:
 # ╟─e4ab8ddd-0486-420d-a90d-e57714ef02de
 # ╠═a186a333-3f34-4973-a1b0-d7cdc6394c3c
+# ╠═b5c9984a-3829-4fd8-9722-99f45806745b
+# ╠═024a576b-a38d-4eac-bf90-537c46a0be90
 # ╠═f2dda08e-ad06-49a6-b867-df2a16393a36
 # ╟─13d75a82-7983-44c0-b367-563ef338a066
 # ╟─2d30826d-5730-4f58-9c01-09f7c4aeb54d
@@ -1722,5 +1730,6 @@ version = "3.5.0+0"
 # ╟─1a4d1e62-6a41-4a75-a759-839445dacf4f
 # ╟─b09620ef-4495-4c83-ad1c-2d8b0ed70710
 # ╟─daf38998-c448-498a-82e2-b48a6a2b9c27
+# ╠═f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
