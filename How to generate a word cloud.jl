@@ -29,6 +29,9 @@ md"""
 Word cloud (tag cloud or wordle) is a novelty visual representation of text data. The importance of each word is shown with its font size, position, or color. 
 """
 
+# ╔═╡ 4b5544d3-230f-499f-94b1-dd05f595ef88
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
+
 # ╔═╡ a186a333-3f34-4973-a1b0-d7cdc6394c3c
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform/animation.gif?raw=true")
 
@@ -74,12 +77,18 @@ md"""
 # ╔═╡ 399582fd-0a17-4cee-8438-32bd2bcba840
 Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true")
 
+# ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
+md"Now that we have already known how to do it, let's bring it to life."
+
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
     logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=90></a>"""
 
-    md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*The forms of textual data are various.*"""
+    md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*The forms of textual data are various. You can provide a file, table or even website url.*"""
 end
+
+# ╔═╡ e8fd9734-40da-4954-a7b1-6d62ae6ed4bc
+md"We should filter out meaningless words and limit the maximum number of words."
 
 # ╔═╡ 6b7b1da7-03dc-4815-9abf-b8eea410d2fd
 md"**max word count:** $(@bind maxnum NumberField(1:5000, default=500))　　**min word length:** $(@bind minlength NumberField(1:1000, default=1))"
@@ -91,8 +100,11 @@ md"""
 # ╔═╡ 0dddeaf5-08c3-46d0-8a79-30b5ce42ef2b
 begin
     wordblacklist = [wordblacklist_[i] for i in findall(r"[^\s,;，；、]+", wordblacklist_)]
-    isempty(wordblacklist) ? nothing : wordblacklist
+    isempty(wordblacklist) ? md"*Put the words you don't want to see in the word cloud into the list above.*" : wordblacklist
 end
+
+# ╔═╡ 9bb3b69a-fd5b-469a-998f-23b6c9e23e5d
+md"The mask controls the shape of the gengerated word cloud. We use [`Luxor.jl`](https://github.com/JuliaGraphics/Luxor.jl) to create various masks."
 
 # ╔═╡ f4844a5f-260b-4713-84bf-69cd8123c7fc
 md"""**mask shape:** $(@bind mask_ Select([:auto, :customsvg, box, ellipse, squircle, ngon, star, bezingon, bezistar])) $(@bind configshape　　CheckBox(default=false))additional config　　**mask size:** $(@bind masksize_ TextField(default="auto"))　*e.g. 400,300*"""
@@ -109,17 +121,17 @@ begin
     elseif mask_ == :customsvg
         md"""**svg string:**　*for example, you can copy svg code from [here](https://heroicons.com/), you should choose a solid type icon*
 
-        $(@bind masksvgstr TextField((80, 2), default=defaultsvgstr))"""
+        $(@bind masksvgstr TextField((55, 2), default=defaultsvgstr))"""
     elseif configshape
         if mask_ in (ngon, star, bezingon, bezistar)
             md"**number of points:** $(@bind npoints NumberField(3:100, default=5))"
         elseif mask_ == squircle
             md"**shape parameter:** $(@bind rt NumberField(0.:0.5:3., default=0.))　*0: rectangle; 1: ellipse; 2: rhombus*; >2: four-armed star"
         else
-            md"use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
+            md"🛈 use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
         end
     else
-        md"use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
+        md"🛈 use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
     end
 end
 
@@ -147,6 +159,9 @@ end
 
 # ╔═╡ b38c3ad9-7885-4af6-8394-877fde8ed83b
 md"**mask outline:** $(@bind outlinewidth NumberField(-1:100, default=-1))　*-1 means random*"
+
+# ╔═╡ b199e23c-de37-4bcf-b563-70bccb59ba4e
+md"There are two optional style of word distribution: uniform and gathering."
 
 # ╔═╡ 6e614caa-38dc-4028-b0a7-05f7030d5b43
 md"**layout style:** $(@bind style Select([:auto, :uniform, :gathering]))"
@@ -178,11 +193,11 @@ md"""
 if anglelength > 0
     md"""from $(@bind anglestart NumberField(-360:360, default=0)) degrees to $(@bind anglestop NumberField(-360:360, default=0)) degrees"""
 else
-    md"use random word orientations"
+    md"🛈 use random word orientations"
 end
 
 # ╔═╡ 14666dc2-7ae4-4808-9db3-456eb26cd435
-md"**word colors:** $(@bind colors_ Select([:auto; WordCloud.Schemes])) $(@bind colorstyle Select([:random, :gradient]))　[*Browse colorschemes*](https://juliagraphics.github.io/ColorSchemes.jl/stable/catalogue)"
+md"**word colors:** $(@bind colors_ Select([:auto; WordCloud.Schemes])) $(@bind colorstyle Select([:random, :gradient]))　[*Browse colorschemes in `ColorSchemes.jl`*](https://juliagraphics.github.io/ColorSchemes.jl/stable/catalogue)"
 
 # ╔═╡ 2870a2ee-aa99-48ec-a26d-fed7b040e6de
 @bind go Button("    Go!    ")
@@ -241,13 +256,18 @@ end
 
 # ╔═╡ 9191230b-b72a-4707-b7cf-1a51c9cdb217
 if texttype == "Web"
-    md"""**URL:** $(@bind url TextField(80, default="http://en.wikipedia.org/wiki/Special:random"))"""
+    md"""**URL:** $(@bind url TextField(70, default="https://help.juliahub.com/juliahub/stable/pluto2023"))  
+	
+	If you don't know what to fill in, *http://en.wikipedia.org/wiki/Special:random* is worth a try.  
+	
+	We fetch the html content using the [`HTTP.jl`](https://github.com/JuliaWeb/HTTP.jl) package then transform it to plain text.
+	"""
 elseif texttype == "Text"
-    @bind text_ TextField((80, 10), defaulttext)
+    @bind text_ TextField((55, 10), defaulttext)
 elseif texttype == "File"
     @bind uploadedfile FilePicker()
 else
-    @bind text_ TextField((30, 15), defaultttable)
+    @bind text_ TextField((20, 15), defaultttable)
 end
 
 # ╔═╡ 66f4b71e-01e5-4279-858b-04d44aeeb574
@@ -403,7 +423,7 @@ begin
     catch e
         # rethrow(e)
     end
-    nothing
+    md"English and Chinese are well supported currently. Chinese word segmentation is a bit difficult, we cannot do it ourselves, so we use [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba) to solve it."
 end
 
 # ╔═╡ 77e13474-8987-4cc6-93a9-ea68ca53b217
@@ -418,7 +438,7 @@ begin
         """
     else
         if colors__ == :auto
-            md"use random color scheme"
+            md"🛈 use random color scheme"
         else
             md"**sampling probability:** $(@bind colorprob NumberField(0.1:0.01:1., default=0.5))"
         end
@@ -488,9 +508,6 @@ begin
     end
 end
 
-
-# ╔═╡ f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
-Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1688,6 +1705,7 @@ version = "3.5.0+0"
 
 # ╔═╡ Cell order:
 # ╟─e4ab8ddd-0486-420d-a90d-e57714ef02de
+# ╟─4b5544d3-230f-499f-94b1-dd05f595ef88
 # ╠═a186a333-3f34-4973-a1b0-d7cdc6394c3c
 # ╠═b5c9984a-3829-4fd8-9722-99f45806745b
 # ╠═024a576b-a38d-4eac-bf90-537c46a0be90
@@ -1699,18 +1717,22 @@ version = "3.5.0+0"
 # ╟─a3b208a3-20c0-439e-96fd-10b0e5cc188a
 # ╠═87a3f36c-079c-4a91-9e8c-f4b6f8cab644
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
-# ╠═399582fd-0a17-4cee-8438-32bd2bcba840
+# ╟─399582fd-0a17-4cee-8438-32bd2bcba840
+# ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
 # ╟─bda3fa85-04a3-4033-9890-a5b4f10e2a77
 # ╟─9191230b-b72a-4707-b7cf-1a51c9cdb217
 # ╟─d8e73850-f0a6-4170-be45-5a7527f1ec39
+# ╟─e8fd9734-40da-4954-a7b1-6d62ae6ed4bc
 # ╟─6b7b1da7-03dc-4815-9abf-b8eea410d2fd
 # ╟─852810b2-1830-4100-ad74-18b8e96afafe
 # ╟─0dddeaf5-08c3-46d0-8a79-30b5ce42ef2b
+# ╟─9bb3b69a-fd5b-469a-998f-23b6c9e23e5d
 # ╟─f4844a5f-260b-4713-84bf-69cd8123c7fc
 # ╟─1aa632dc-b3e8-4a9d-9b9e-c13cd05cf97e
 # ╟─a90b83ca-384d-4157-99b3-df15764a242f
 # ╟─1842a3c8-4b47-4d36-a4e4-9a5ff4df452e
 # ╟─b38c3ad9-7885-4af6-8394-877fde8ed83b
+# ╟─b199e23c-de37-4bcf-b563-70bccb59ba4e
 # ╟─6e614caa-38dc-4028-b0a7-05f7030d5b43
 # ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
 # ╟─872f2653-303f-4b53-8e01-26bec86fc413
@@ -1730,6 +1752,5 @@ version = "3.5.0+0"
 # ╟─1a4d1e62-6a41-4a75-a759-839445dacf4f
 # ╟─b09620ef-4495-4c83-ad1c-2d8b0ed70710
 # ╟─daf38998-c448-498a-82e2-b48a6a2b9c27
-# ╠═f88f0820-ade7-4e5d-9e91-8c5f9cd0f624
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
