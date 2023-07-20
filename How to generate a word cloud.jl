@@ -88,7 +88,7 @@ begin
 end
 
 # ╔═╡ e8fd9734-40da-4954-a7b1-6d62ae6ed4bc
-md"We should filter out meaningless words and limit the maximum number of words."
+md"We should filter out meaningless words and limit the maximum number of words. Then we count the number of occurrences of the word as its weight."
 
 # ╔═╡ 6b7b1da7-03dc-4815-9abf-b8eea410d2fd
 md"**max word count:** $(@bind maxnum NumberField(1:5000, default=500))　　**min word length:** $(@bind minlength NumberField(1:1000, default=1))"
@@ -103,8 +103,38 @@ begin
     isempty(wordblacklist) ? md"*Add the words you wish to exclude from the word cloud to the list provided above.*" : wordblacklist
 end
 
+# ╔═╡ dfe608b0-077c-437a-adf2-b1382a0eb4eb
+begin
+    weightscale_funcs = [
+        identity => "identity",
+        (√) => "√x",
+        log1p => "log x",
+        (n -> n^2) => "x²",
+        expm1 => "exp x",
+    ]
+    md"**rescale weights:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
+end
+
+# ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
+md"""
+We can rescale the weights of words and balance the sizes of words with different lengths. The rescaling can be done using a nonlinear function, while for achieving balance, we utilize the power mean and tan functions. The formula is as follows:
+
+$\text{weight\_new} = \frac{\text{rescale(weight)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
+"""
+
+# ╔═╡ b199e23c-de37-4bcf-b563-70bccb59ba4e
+md"""###### ✿ Overall Layout
+There are two optional styles of word distribution, as illustrated in the previous section: uniform and gathering. Additionally, text density and spacing between words can also influence the overall layout appearance. You can adjust these options below."""
+
+# ╔═╡ 6e614caa-38dc-4028-b0a7-05f7030d5b43
+md"**layout style:** $(@bind style Select([:auto, :uniform, :gathering]))"
+
+# ╔═╡ 1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
+md"""**text density:** $(@bind density NumberField(0.1:0.01:10.0, default=0.5))　　**min word spacing:** $(@bind spacing NumberField(0:100, default=2))"""
+
 # ╔═╡ 9bb3b69a-fd5b-469a-998f-23b6c9e23e5d
-md"The mask controls the shape of the gengerated word cloud and influences its appearance. To create a variety of masks, we utilize the powerful [`Luxor.jl`](https://github.com/JuliaGraphics/Luxor.jl) package."
+md"""###### ✿ Mask Style
+The mask controls the shape of the gengerated word cloud and influences its appearance. To create a variety of masks, we utilize the powerful [`Luxor.jl`](https://github.com/JuliaGraphics/Luxor.jl) package."""
 
 # ╔═╡ f4844a5f-260b-4713-84bf-69cd8123c7fc
 md"""**mask shape:** $(@bind mask_ Select([:auto, :customsvg, box, ellipse, squircle, ngon, star, bezingon, bezistar])) $(@bind configshape　　CheckBox(default=false))additional config　　**mask size:** $(@bind masksize_ TextField(default="auto"))　*e.g. 400,300*"""
@@ -160,36 +190,9 @@ end
 # ╔═╡ b38c3ad9-7885-4af6-8394-877fde8ed83b
 md"**mask outline:** $(@bind outlinewidth NumberField(-1:100, default=-1))　*-1 means random*"
 
-# ╔═╡ b199e23c-de37-4bcf-b563-70bccb59ba4e
-md"There are two optional styles of word distribution, as illustrated in the previous section: uniform and gathering. Additionally, text density and spacing between words can also influence the overall layout appearance. You can adjust these options below."
-
-# ╔═╡ 6e614caa-38dc-4028-b0a7-05f7030d5b43
-md"**layout style:** $(@bind style Select([:auto, :uniform, :gathering]))"
-
-# ╔═╡ 1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
-md"""**text density:** $(@bind density NumberField(0.1:0.01:10.0, default=0.5))　　**min word spacing:** $(@bind spacing NumberField(0:100, default=2))"""
-
-# ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
-md"""
-We can rescale the weights of words and balance the sizes of words with different lengths. The rescaling can be done using a nonlinear function, while for achieving balance, we utilize the power mean and tan functions. The formula is as follows:
-
-$\text{weight\_new} = \frac{\text{rescale(weight)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
-"""
-
-# ╔═╡ dfe608b0-077c-437a-adf2-b1382a0eb4eb
-begin
-    weightscale_funcs = [
-        identity => "identity",
-        (√) => "√x",
-        log1p => "log x",
-        (n -> n^2) => "x²",
-        expm1 => "exp x",
-    ]
-    md"**rescale weights:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
-end
-
 # ╔═╡ bd801e34-c012-4afc-8100-02b5e06d4e2b
-md"You can set the fonts, colors, and orientations of the text below."
+md"""###### ✿ Text Style
+You can set the fonts, colors, and orientations of the text below."""
 
 # ╔═╡ 26d6b795-1cc3-4548-aa07-86c2f6ee0776
 md"""**text fonts:** $(@bind fonts_ TextField(default="auto"))　*Use commas to separate multiple fonts.*"""
@@ -433,7 +436,8 @@ begin
     catch e
         # rethrow(e)
     end
-    md"We plan to support both English and Chinese languages. While English text can be easily split using spaces, Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."
+    md"""###### ✿ Text Processing
+	We plan to support both English and Chinese languages. While English text can be easily split using spaces, Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."""
 end
 
 # ╔═╡ 77e13474-8987-4cc6-93a9-ea68ca53b217
@@ -1736,17 +1740,17 @@ version = "3.5.0+0"
 # ╟─6b7b1da7-03dc-4815-9abf-b8eea410d2fd
 # ╟─852810b2-1830-4100-ad74-18b8e96afafe
 # ╟─0dddeaf5-08c3-46d0-8a79-30b5ce42ef2b
+# ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
+# ╟─b4ffc272-8625-49f5-bee6-6fbbf03f9005
+# ╟─b199e23c-de37-4bcf-b563-70bccb59ba4e
+# ╟─6e614caa-38dc-4028-b0a7-05f7030d5b43
+# ╟─1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
 # ╟─9bb3b69a-fd5b-469a-998f-23b6c9e23e5d
 # ╟─f4844a5f-260b-4713-84bf-69cd8123c7fc
 # ╟─1aa632dc-b3e8-4a9d-9b9e-c13cd05cf97e
 # ╟─a90b83ca-384d-4157-99b3-df15764a242f
 # ╟─1842a3c8-4b47-4d36-a4e4-9a5ff4df452e
 # ╟─b38c3ad9-7885-4af6-8394-877fde8ed83b
-# ╟─b199e23c-de37-4bcf-b563-70bccb59ba4e
-# ╟─6e614caa-38dc-4028-b0a7-05f7030d5b43
-# ╟─1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
-# ╟─b4ffc272-8625-49f5-bee6-6fbbf03f9005
-# ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
 # ╟─bd801e34-c012-4afc-8100-02b5e06d4e2b
 # ╟─26d6b795-1cc3-4548-aa07-86c2f6ee0776
 # ╟─7993fd44-2fcf-488e-9280-4b4d0bf0e22c
