@@ -82,7 +82,7 @@ md"Now that we have already known how to do it, let's bring it to life."
 
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
-    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=90></a>"""
+    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=100></a>"""
 
     md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*The forms of textual data are various. You can provide a file, table or even website url.*"""
 end
@@ -152,7 +152,7 @@ else
         r = md"""**background color:** $(@bind backgroundcolor ColorStringPicker())"""
     else
         backgroundcolor = backgroundcolor_
-        nothing
+        md"🛈 use random mask and background color"
     end
 end
 
@@ -188,26 +188,29 @@ begin
     md"**rescale weights:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
 end
 
+# ╔═╡ bd801e34-c012-4afc-8100-02b5e06d4e2b
+md"You can set the fonts, colors, and orientations of the text below."
+
 # ╔═╡ 26d6b795-1cc3-4548-aa07-86c2f6ee0776
-md"""**word fonts:** $(@bind fonts_ TextField(default="auto"))　*Use commas to separate multiple fonts.*"""
+md"""**text fonts:** $(@bind fonts_ TextField(default="auto"))　*Use commas to separate multiple fonts.*"""
 
 # ╔═╡ 7993fd44-2fcf-488e-9280-4b4d0bf0e22c
 md"""
-**word orientations:** $(@bind anglelength NumberField(-1:1000, default=-1)) orientations
+**text orientations:** $(@bind anglelength NumberField(0:1000, default=0)) orientations　*0 means random*
 """
 
 # ╔═╡ 8153f1f1-9704-4b1e-bff9-009a54404448
 if anglelength > 0
     md"""from $(@bind anglestart NumberField(-360:360, default=0)) degrees to $(@bind anglestop NumberField(-360:360, default=0)) degrees"""
 else
-    md"🛈 use random word orientations"
+    md"🛈 use random text orientations"
 end
 
 # ╔═╡ 14666dc2-7ae4-4808-9db3-456eb26cd435
-md"**word colors:** $(@bind colors_ Select([:auto; WordCloud.Schemes])) $(@bind colorstyle Select([:random, :gradient]))　[*Browse colorschemes in `ColorSchemes.jl`*](https://juliagraphics.github.io/ColorSchemes.jl/stable/catalogue)"
+md"**text colors:** $(@bind colors_ Select([:auto; WordCloud.Schemes])) $(@bind colorstyle Select([:random, :gradient]))　[*Browse colorschemes in `ColorSchemes.jl`*](https://juliagraphics.github.io/ColorSchemes.jl/stable/catalogue)"
 
 # ╔═╡ 2870a2ee-aa99-48ec-a26d-fed7b040e6de
-@bind go Button("    Go!    ")
+@bind go Button("    🎲 Try again !    ")
 
 # ╔═╡ 21ba4b81-07aa-4828-875d-090e0b918c76
 begin
@@ -263,7 +266,7 @@ end
 
 # ╔═╡ 9191230b-b72a-4707-b7cf-1a51c9cdb217
 if texttype == "Web"
-    md"""**URL:** $(@bind url TextField(70, default="https://help.juliahub.com/juliahub/stable/pluto2023"))  
+    md"""🌐 $(@bind url TextField(70, default="https://help.juliahub.com/juliahub/stable/pluto2023"))  
 	
 	If you don't know what to fill in, *http://en.wikipedia.org/wiki/Special:random* is worth a try.  
 
@@ -430,7 +433,7 @@ begin
     catch e
         # rethrow(e)
     end
-    md"We plan to support both English and Chinese languages. While English text can be easily split using spaces, Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us.."
+    md"We plan to support both English and Chinese languages. While English text can be easily split using spaces, Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."
 end
 
 # ╔═╡ 77e13474-8987-4cc6-93a9-ea68ca53b217
@@ -1744,6 +1747,7 @@ version = "3.5.0+0"
 # ╟─1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
 # ╟─b4ffc272-8625-49f5-bee6-6fbbf03f9005
 # ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
+# ╟─bd801e34-c012-4afc-8100-02b5e06d4e2b
 # ╟─26d6b795-1cc3-4548-aa07-86c2f6ee0776
 # ╟─7993fd44-2fcf-488e-9280-4b4d0bf0e22c
 # ╟─8153f1f1-9704-4b1e-bff9-009a54404448
