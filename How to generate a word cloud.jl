@@ -82,16 +82,16 @@ md"Now that we have already known how to do it, let's bring it to life."
 
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
-    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=100></a>"""
+    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=90></a>"""
 
-    md"""$logo  **From** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*The forms of textual data are various. You can provide a file, table or even website url.*"""
+    md"""$logo  **Data source:** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*You can directly input the text, or give a file, a table or even a website.*"""
 end
 
 # ╔═╡ e8fd9734-40da-4954-a7b1-6d62ae6ed4bc
-md"We should filter out meaningless words and limit the maximum number of words. Then we count the number of occurrences of the word as its weight."
+md"We can set a maximum word limit, filter out short words, and apply a word blacklist. After that we get the words we want, wherewith the visualisation is performed."
 
 # ╔═╡ 6b7b1da7-03dc-4815-9abf-b8eea410d2fd
-md"**max word count:** $(@bind maxnum NumberField(1:5000, default=500))　　**min word length:** $(@bind minlength NumberField(1:1000, default=1))"
+md"**max word count:** $(@bind maxnum NumberField(1:5000, default=500))　　**shortest word:** $(@bind minlength NumberField(1:1000, default=1))"
 
 # ╔═╡ 852810b2-1830-4100-ad74-18b8e96afafe
 md"""
@@ -100,8 +100,15 @@ md"""
 # ╔═╡ 0dddeaf5-08c3-46d0-8a79-30b5ce42ef2b
 begin
     wordblacklist = [wordblacklist_[i] for i in findall(r"[^\s,;，；、]+", wordblacklist_)]
-    isempty(wordblacklist) ? md"*Add the words you wish to exclude from the word cloud to the list provided above.*" : wordblacklist
+    isempty(wordblacklist) ? md"*Add the words you want to exclude.*" : wordblacklist
 end
+
+# ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
+md"""
+We assign each word an initial font size based on its frequency. Then we can rescale sizes of words of different frequencies and balance the sizes of words with different lengths. The rescaling can be done using a nonlinear function, while for achieving balance, we utilize the power mean and tan functions. The formula is as follows:
+
+$\text{new\_size} = \frac{\text{rescale(size)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
+"""
 
 # ╔═╡ dfe608b0-077c-437a-adf2-b1382a0eb4eb
 begin
@@ -112,19 +119,12 @@ begin
         (n -> n^2) => "x²",
         expm1 => "exp x",
     ]
-    md"**rescale weights:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
+    md"**rescale:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
 end
-
-# ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
-md"""
-We can rescale the weights of words and balance the sizes of words with different lengths. The rescaling can be done using a nonlinear function, while for achieving balance, we utilize the power mean and tan functions. The formula is as follows:
-
-$\text{weight\_new} = \frac{\text{rescale(weight)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
-"""
 
 # ╔═╡ b199e23c-de37-4bcf-b563-70bccb59ba4e
 md"""###### ✿ Overall Layout
-There are two optional styles of word distribution, as illustrated in the previous section: uniform and gathering. Additionally, text density and spacing between words can also influence the overall layout appearance. You can adjust these options below."""
+There are two styles of word distribution, as illustrated in the previous section: uniform and gathering. In addition, text density and spacing between words can also influence the overall layout appearance."""
 
 # ╔═╡ 6e614caa-38dc-4028-b0a7-05f7030d5b43
 md"**layout style:** $(@bind style Select([:auto, :uniform, :gathering]))"
@@ -137,7 +137,9 @@ md"""###### ✿ Mask Style
 The mask controls the shape of the gengerated word cloud and influences its appearance. To create a variety of masks, we utilize the powerful [`Luxor.jl`](https://github.com/JuliaGraphics/Luxor.jl) package."""
 
 # ╔═╡ f4844a5f-260b-4713-84bf-69cd8123c7fc
-md"""**mask shape:** $(@bind mask_ Select([:auto, :customsvg, box, ellipse, squircle, ngon, star, bezingon, bezistar])) $(@bind configshape　　CheckBox(default=false))additional config　　**mask size:** $(@bind masksize_ TextField(default="auto"))　*e.g. 400,300*"""
+md"""**mask shape:** $(@bind mask_ Select([:auto, :customsvg, box, ellipse, squircle, ngon, star, bezingon, bezistar])) $(@bind configshape　　CheckBox(default=false))additional config
+
+**mask size:** $(@bind masksize_ TextField(default="auto"))　*e.g. 400,300*"""
 
 # ╔═╡ 1aa632dc-b3e8-4a9d-9b9e-c13cd05cf97e
 begin
@@ -158,10 +160,10 @@ begin
         elseif mask_ == squircle
             md"**shape parameter:** $(@bind rt NumberField(0.:0.5:3., default=0.))　*0: rectangle; 1: ellipse; 2: rhombus*; >2: four-armed star"
         else
-            md"🛈 use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
+            md"🛈 random $(mask_ isa Function ? nameof(mask_) : mask_) shape in use"
         end
     else
-        md"🛈 use random $(mask_ isa Function ? nameof(mask_) : mask_) shape"
+        md"🛈 random $(mask_ isa Function ? nameof(mask_) : mask_) shape in use"
     end
 end
 
@@ -182,7 +184,7 @@ else
         r = md"""**background color:** $(@bind backgroundcolor ColorStringPicker())"""
     else
         backgroundcolor = backgroundcolor_
-        md"🛈 use random mask and background color"
+        md"🛈 random mask color and background color in use"
     end
 end
 
@@ -192,7 +194,7 @@ md"**mask outline:** $(@bind outlinewidth NumberField(-1:100, default=-1))　*-1
 
 # ╔═╡ bd801e34-c012-4afc-8100-02b5e06d4e2b
 md"""###### ✿ Text Style
-You can set the fonts, colors, and orientations of the text below."""
+Customize fonts, colors, and text orientations."""
 
 # ╔═╡ 26d6b795-1cc3-4548-aa07-86c2f6ee0776
 md"""**text fonts:** $(@bind fonts_ TextField(default="auto"))　*Use commas to separate multiple fonts.*"""
@@ -206,7 +208,7 @@ md"""
 if anglelength > 0
     md"""from $(@bind anglestart NumberField(-360:360, default=0)) degrees to $(@bind anglestop NumberField(-360:360, default=0)) degrees"""
 else
-    md"🛈 use random text orientations"
+    md"🛈 random text orientations in use"
 end
 
 # ╔═╡ 14666dc2-7ae4-4808-9db3-456eb26cd435
@@ -271,7 +273,7 @@ end
 if texttype == "Web"
     md"""🌐 $(@bind url TextField(70, default="https://help.juliahub.com/juliahub/stable/pluto2023"))  
 	
-	If you don't know what to fill in, *http://en.wikipedia.org/wiki/Special:random* is worth a try.  
+	( If you don't know what to fill in, give *http://en.wikipedia.org/wiki/Special:random* a shot. )  
 
 	We retrieve the html content using the [`HTTP.jl`](https://github.com/JuliaWeb/HTTP.jl) package and then convert it into plain text.
 	"""
@@ -437,7 +439,7 @@ begin
         # rethrow(e)
     end
     md"""###### ✿ Text Processing
-	We plan to support both English and Chinese languages. While English text can be easily split using spaces, Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."""
+	We plan to support both English and Chinese. English text can be easily split using spaces, while Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."""
 end
 
 # ╔═╡ 77e13474-8987-4cc6-93a9-ea68ca53b217
@@ -452,7 +454,7 @@ begin
         """
     else
         if colors__ == :auto
-            md"🛈 use random color scheme"
+            md"🛈 random color scheme in use"
         else
             md"**sampling probability:** $(@bind colorprob NumberField(0.1:0.01:1., default=0.5))"
         end
@@ -1740,8 +1742,8 @@ version = "3.5.0+0"
 # ╟─6b7b1da7-03dc-4815-9abf-b8eea410d2fd
 # ╟─852810b2-1830-4100-ad74-18b8e96afafe
 # ╟─0dddeaf5-08c3-46d0-8a79-30b5ce42ef2b
-# ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
 # ╟─b4ffc272-8625-49f5-bee6-6fbbf03f9005
+# ╟─dfe608b0-077c-437a-adf2-b1382a0eb4eb
 # ╟─b199e23c-de37-4bcf-b563-70bccb59ba4e
 # ╟─6e614caa-38dc-4028-b0a7-05f7030d5b43
 # ╟─1e8947ee-5f2a-4bed-99d5-f24ebc6cfbf3
