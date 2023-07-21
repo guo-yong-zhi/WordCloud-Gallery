@@ -21,7 +21,10 @@ begin
     using HTTP
     using ImageIO
     using PythonCall
-    using CondaPkg; CondaPkg.add("jieba")
+    using CondaPkg
+	redirect_stdio(stdout=devnull, stderr=devnull) do
+		CondaPkg.add("jieba")
+	end
 end
 
 # ╔═╡ e4ab8ddd-0486-420d-a90d-e57714ef02de
@@ -82,7 +85,7 @@ md"Now that we have already known how to do it, let's bring it to life."
 
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
-    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=90></a>"""
+    logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=86></a>"""
 
     md"""$logo  **Data source:** $(@bind texttype Select(["Text", "File", "Web", "Table"]))　*You can directly input the text, or give a file, a table or even a website.*"""
 end
@@ -105,21 +108,21 @@ end
 
 # ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
 md"""
-We assign each word an initial font size based on its frequency. Then we can rescale sizes of words of different frequencies and balance the sizes of words with different lengths. The rescaling can be done using a nonlinear function, while for achieving balance, we utilize the power mean and tan functions. The formula is as follows:
+Then we assign a font size to each word by scaling them according to their frequencies and normalizing based on the word's length. This can be achieved with a mapping function for scaling and a combination of power mean and tan functions for normalizing. The formula is as follows:
 
-$\text{new\_size} = \frac{\text{rescale(size)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
+$\text{font\_size} = \frac{\text{scale(frequency)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
 """
 
 # ╔═╡ dfe608b0-077c-437a-adf2-b1382a0eb4eb
 begin
     weightscale_funcs = [
-        identity => "identity",
+        identity => "linear",
         (√) => "√x",
         log1p => "log x",
         (n -> n^2) => "x²",
         expm1 => "exp x",
     ]
-    md"**rescale:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
+    md"**scale:** $(@bind rescale_func Select(weightscale_funcs))　　**word length balance:** $(@bind word_length_balance Slider(-1:0.01:1, default=0, show_value=true))"
 end
 
 # ╔═╡ b199e23c-de37-4bcf-b563-70bccb59ba4e
@@ -1722,16 +1725,16 @@ version = "3.5.0+0"
 # ╔═╡ Cell order:
 # ╟─e4ab8ddd-0486-420d-a90d-e57714ef02de
 # ╟─4b5544d3-230f-499f-94b1-dd05f595ef88
-# ╠═a186a333-3f34-4973-a1b0-d7cdc6394c3c
-# ╠═b5c9984a-3829-4fd8-9722-99f45806745b
-# ╠═024a576b-a38d-4eac-bf90-537c46a0be90
-# ╠═f2dda08e-ad06-49a6-b867-df2a16393a36
+# ╟─a186a333-3f34-4973-a1b0-d7cdc6394c3c
+# ╟─b5c9984a-3829-4fd8-9722-99f45806745b
+# ╟─024a576b-a38d-4eac-bf90-537c46a0be90
+# ╟─f2dda08e-ad06-49a6-b867-df2a16393a36
 # ╟─13d75a82-7983-44c0-b367-563ef338a066
 # ╟─2d30826d-5730-4f58-9c01-09f7c4aeb54d
 # ╟─bc9e1be6-8589-46bb-8e7d-fd0c75c3e7d5
 # ╟─9ce92b78-007f-4d1b-8a67-c88e8793c22b
 # ╟─a3b208a3-20c0-439e-96fd-10b0e5cc188a
-# ╠═87a3f36c-079c-4a91-9e8c-f4b6f8cab644
+# ╟─87a3f36c-079c-4a91-9e8c-f4b6f8cab644
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 # ╟─399582fd-0a17-4cee-8438-32bd2bcba840
 # ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
