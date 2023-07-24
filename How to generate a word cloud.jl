@@ -20,20 +20,33 @@ begin
     using WordCloud
     using HTTP
     using ImageIO
+	redirect_stdio(stdout=devnull, stderr=devnull)
     using PythonCall
     using CondaPkg
-	redirect_stdio(stdout=devnull, stderr=devnull) do
-		CondaPkg.add("jieba")
-	end
+	redirect_stdio()
+	nothing
 end
+
+# ╔═╡ 10b8d675-ee35-46dd-aee7-6792749d16f2
+md"# How to Generate a Word Cloud"
 
 # ╔═╡ e4ab8ddd-0486-420d-a90d-e57714ef02de
 md"""
-Word cloud (tag cloud or wordle) is a novelty visual representation of text data. The importance of each word is shown with its font size, position, or color. 
+`Word cloud`, also known as `tag cloud`, is a popular visual representation of textual data. It conveys word importance through font size, position, or color. Word clouds are ubiquitous across the internet, like those examples below.
 """
 
 # ╔═╡ 4b5544d3-230f-499f-94b1-dd05f595ef88
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordclouds.png?raw=true")
+
+# ╔═╡ ffa6f9f4-0a00-409c-a4c3-b00a0060877f
+md"""
+How to generate a word cloud with algorithm? A direct answer to this question would be that we initially place the words and then carefully adjust their positions until they do not overlap.
+"""
+
+# ╔═╡ 04a2b044-3e90-4c22-a2af-143f5476b6c8
+md"""
+The algorithm of placing words is not that difficult. Each word will be place only once so the effcifent is not critical.
+"""
 
 # ╔═╡ a186a333-3f34-4973-a1b0-d7cdc6394c3c
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform/animation.gif?raw=true")
@@ -41,11 +54,11 @@ Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/ani
 # ╔═╡ b5c9984a-3829-4fd8-9722-99f45806745b
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering/animation.gif?raw=true")
 
-# ╔═╡ 024a576b-a38d-4eac-bf90-537c46a0be90
-Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering_fit/animation.gif?raw=true")
-
 # ╔═╡ f2dda08e-ad06-49a6-b867-df2a16393a36
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform_fit/animation.gif?raw=true")
+
+# ╔═╡ 024a576b-a38d-4eac-bf90-537c46a0be90
+Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering_fit/animation.gif?raw=true")
 
 # ╔═╡ 13d75a82-7983-44c0-b367-563ef338a066
 md"""
@@ -108,7 +121,7 @@ end
 
 # ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
 md"""
-Then we assign a font size to each word by scaling them according to their frequencies and normalizing based on the word's length. This can be achieved with a mapping function for scaling and a combination of power mean and tan functions for normalizing. The formula is as follows:
+Then we determine font sizes by word frequencies and lengths. This involves a scaling process using a mapping function and normalization using a combination of power mean and tan functions. The formula can be expressed as:
 
 $\text{font\_size} = \frac{\text{scale(frequency)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
 """
@@ -1723,12 +1736,15 @@ version = "3.5.0+0"
 """
 
 # ╔═╡ Cell order:
+# ╟─10b8d675-ee35-46dd-aee7-6792749d16f2
 # ╟─e4ab8ddd-0486-420d-a90d-e57714ef02de
 # ╟─4b5544d3-230f-499f-94b1-dd05f595ef88
+# ╟─ffa6f9f4-0a00-409c-a4c3-b00a0060877f
+# ╠═04a2b044-3e90-4c22-a2af-143f5476b6c8
 # ╟─a186a333-3f34-4973-a1b0-d7cdc6394c3c
 # ╟─b5c9984a-3829-4fd8-9722-99f45806745b
-# ╟─024a576b-a38d-4eac-bf90-537c46a0be90
 # ╟─f2dda08e-ad06-49a6-b867-df2a16393a36
+# ╟─024a576b-a38d-4eac-bf90-537c46a0be90
 # ╟─13d75a82-7983-44c0-b367-563ef338a066
 # ╟─2d30826d-5730-4f58-9c01-09f7c4aeb54d
 # ╟─bc9e1be6-8589-46bb-8e7d-fd0c75c3e7d5
