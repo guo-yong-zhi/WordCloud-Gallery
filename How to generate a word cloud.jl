@@ -152,6 +152,9 @@ md"""For the details of the implementation of the algorithm, you can refer to ou
 Now we are familiar with the algorithm, let's turn it into an application.
 """
 
+# ╔═╡ 0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
+
+
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
     logo = html"""<a href="https://github.com/guo-yong-zhi/WordCloud.jl"><img src="https://raw.githubusercontent.com/guo-yong-zhi/WordCloud.jl/master/docs/src/assets/logo.svg" alt="WordCloud" width=86></a>"""
@@ -321,7 +324,7 @@ begin
         తెలుగు, 83
         Türkçe, 84
         اردو, 70.6
-        Tiếng, Việt, 85
+        Tiếng Việt, 85
         پنجابی, 66.7
         吴语, 83.4
         粤语, 86.1
@@ -344,6 +347,7 @@ elseif texttype == "File"
 else
     md"""
     *The first column contains words, the second column contains weights.*
+	
     $(@bind text_ TextField((20, 15), defaultttable))
     """
 end
@@ -1809,6 +1813,7 @@ version = "3.5.0+0"
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 # ╟─399582fd-0a17-4cee-8438-32bd2bcba840
 # ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
+# ╟─0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
 # ╟─bda3fa85-04a3-4033-9890-a5b4f10e2a77
 # ╟─9191230b-b72a-4707-b7cf-1a51c9cdb217
 # ╟─d8e73850-f0a6-4170-be45-5a7527f1ec39
