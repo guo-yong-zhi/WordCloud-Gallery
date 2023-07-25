@@ -82,30 +82,46 @@ How to generate a word cloud with algorithm? A direct answer to this question wo
 
 # ╔═╡ 04a2b044-3e90-4c22-a2af-143f5476b6c8
 md"""
-The algorithm of placing words is not that difficult. Each word will be place only once so the effcifent is not critical.
+The algorithm for placing words is relatively simple since each word is positioned only once, making efficiency less critical. Different placing strategies will result in different word cloud styles. For instance, the two approaches below lead to a uniform style and a gathering style, respectively.
 """
+
+# ╔═╡ c51883b6-5ef6-4a78-bdc2-b39e49403ecf
+md"**Placing — Uniform style**"
 
 # ╔═╡ a186a333-3f34-4973-a1b0-d7cdc6394c3c
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform/animation.gif?raw=true")
 
+# ╔═╡ e5d15923-9a17-493d-b2af-244509e1e3ba
+md"**Placing — Gathering style**"
+
 # ╔═╡ b5c9984a-3829-4fd8-9722-99f45806745b
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering/animation.gif?raw=true")
 
+# ╔═╡ 3826a575-abef-4633-93ee-78a299da9998
+md"""
+Developing an effective algorithm for adjusting positions presents a considerable challenge. The efficiency of this step is rather critical as it involves repeated movement of words. The subsequent adjusting processes of the above examples are shown in the following pictures.
+"""
+
+# ╔═╡ 0e5f246d-aae1-4c4d-b6cd-92b2d2f617f9
+md"**Adjustment — Uniform style**"
+
 # ╔═╡ f2dda08e-ad06-49a6-b867-df2a16393a36
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform_fit/animation.gif?raw=true")
+
+# ╔═╡ 638fa2aa-24c4-4867-ad2b-aa9e800fe324
+md"**Adjustment — Gthering style**"
 
 # ╔═╡ 024a576b-a38d-4eac-bf90-537c46a0be90
 Resource("https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering_fit/animation.gif?raw=true")
 
 # ╔═╡ 13d75a82-7983-44c0-b367-563ef338a066
 md"""
-## Algorithm Description
-The algorithm consists of three main steps:
+The following discussion focuses on the more difficult part — adjustment algorithm, which consists of three main steps.
 """
 
 # ╔═╡ 2d30826d-5730-4f58-9c01-09f7c4aeb54d
 md"""
-1. **Ternary Raster Pyramid Construction**: Initially, a ternary raster pyramid is created for each original binary raster mask. This pyramid comprises downsampled layers of the original mask. Each subsequent layer is downsampled at a 2:1 scale. Consequently, the pyramid can be viewed as a collection of hierarchical bounding boxes. Each pixel in every layer (tree node) can take one of three values: `FULL`, `EMPTY`, or `MIX`.
+1. **Ternary Raster Pyramid Construction**: Initially, a binary raster mask is created for each word, and based on this, a ternary raster pyramid is constructed. This pyramid comprises downsampled layers of the original mask. Each subsequent layer is downsampled at a 2:1 scale. Consequently, the pyramid can be viewed as a collection of hierarchical bounding boxes. Each pixel in every layer (tree node) can take one of three values: `FULL`, `EMPTY`, or `MIX`.
 """
 
 # ╔═╡ bc9e1be6-8589-46bb-8e7d-fd0c75c3e7d5
@@ -124,14 +140,17 @@ Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/collision.pn
 
 # ╔═╡ b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 md"""
-3. **Object Movement and Reconstruction**: In the final step, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the `AbstractStackedQTree`s to prepare for the next round of collision detection.
+3. **Object Movement and Reconstruction**: In the final step, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the pyramids to prepare for the next round of collision detection.
 """
 
 # ╔═╡ 399582fd-0a17-4cee-8438-32bd2bcba840
 Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true")
 
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
-md"Now that we have already known how to do it, let's bring it to life."
+md"""For the details of the implementation of the algorithm, you can refer to our package [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl).
+
+Now we are familiar with the algorithm, let's turn it into an application.
+"""
 
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
@@ -1771,10 +1790,15 @@ version = "3.5.0+0"
 # ╟─e4ab8ddd-0486-420d-a90d-e57714ef02de
 # ╟─4b5544d3-230f-499f-94b1-dd05f595ef88
 # ╟─ffa6f9f4-0a00-409c-a4c3-b00a0060877f
-# ╠═04a2b044-3e90-4c22-a2af-143f5476b6c8
+# ╟─04a2b044-3e90-4c22-a2af-143f5476b6c8
+# ╟─c51883b6-5ef6-4a78-bdc2-b39e49403ecf
 # ╟─a186a333-3f34-4973-a1b0-d7cdc6394c3c
+# ╟─e5d15923-9a17-493d-b2af-244509e1e3ba
 # ╟─b5c9984a-3829-4fd8-9722-99f45806745b
+# ╟─3826a575-abef-4633-93ee-78a299da9998
+# ╟─0e5f246d-aae1-4c4d-b6cd-92b2d2f617f9
 # ╟─f2dda08e-ad06-49a6-b867-df2a16393a36
+# ╟─638fa2aa-24c4-4867-ad2b-aa9e800fe324
 # ╟─024a576b-a38d-4eac-bf90-537c46a0be90
 # ╟─13d75a82-7983-44c0-b367-563ef338a066
 # ╟─2d30826d-5730-4f58-9c01-09f7c4aeb54d
