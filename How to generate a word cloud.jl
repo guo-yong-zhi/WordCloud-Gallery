@@ -279,34 +279,34 @@ begin
     This format is useful for quickly perceiving the most prominent terms to determine its relative prominence.  
     """
     defaultttable = """
-বাংলা, 234
-भोजपुरी, 52.3
-مصري, 77.4
-English, 380
-Français, 80.8
-ગુજરાતી, 57.1
-هَوْسَ, 51.7
-हिन्दी, 345
-فارسی, 57.2
-Italiano, 64.6
-日本語, 123
-ꦧꦱꦗꦮ, 68.3
-한국어, 81.7
-普通话, 939
-मराठी, 83.2
-Português, 236
-Русский, 147
-Español, 485
-Deutsch, 75.3
-தமிழ், 78.6
-తెలుగు, 83
-Türkçe, 84
-اردو, 70.6
-Tiếng, Việt, 85
-پنجابی, 66.7
-吴语, 83.4
-粤语, 86.1
-	"""
+		বাংলা, 234
+		भोजपुरी, 52.3
+		مصري, 77.4
+		English, 380
+		Français, 80.8
+		ગુજરાતી, 57.1
+		هَوْسَ, 51.7
+		हिन्दी, 345
+		فارسی, 57.2
+		Italiano, 64.6
+		日本語, 123
+		ꦧꦱꦗꦮ, 68.3
+		한국어, 81.7
+		普通话, 939
+		मराठी, 83.2
+		Português, 236
+		Русский, 147
+		Español, 485
+		Deutsch, 75.3
+		தமிழ், 78.6
+		తెలుగు, 83
+		Türkçe, 84
+		اردو, 70.6
+		Tiếng, Việt, 85
+		پنجابی, 66.7
+		吴语, 83.4
+		粤语, 86.1
+		"""
     nothing
 end
 
@@ -323,7 +323,10 @@ elseif texttype == "Text"
 elseif texttype == "File"
     @bind uploadedfile FilePicker()
 else
-    @bind text_ TextField((20, 15), defaultttable)
+    md"""
+	*The first column contains words, the second column contains weights.*
+	$(@bind text_ TextField((20, 15), defaultttable))
+	"""
 end
 
 # ╔═╡ 66f4b71e-01e5-4279-858b-04d44aeeb574
