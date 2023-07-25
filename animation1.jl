@@ -2,7 +2,7 @@
 using WordCloud
 docs = (readdir(joinpath(dirname(Sys.BINDIR), "share/doc/julia/html/en", dir), join=true) for dir in ["manual", "base", "stdlib"])
 docs = docs |> Iterators.flatten
-words, weights = processtext(maxnum=200, maxweight=1) do
+words, weights = processtext(maxnum=300, maxweight=1) do
     counter = Dict{String,Int}()
     for doc in docs
         content = html2text(open(doc))
@@ -13,14 +13,15 @@ end
 colors=collect(WordCloud.colorschemes[:seaborn_deep6].colors)
 wc = wordcloud(
     words, weights, 
-    masksize = (300, 200),
+    masksize = (450, 300),
     outline = 3, linecolor=colors[3],
     angles = 0:90,
     mask=squircle,rt=0.92,backgroundcolor="white",fonts="dyuthi",
-    spacing=1, density=0.5, colors=[colors[3:end]; colors[1:2]],
+    spacing=1, density=0.55, colors=[colors[3:end]; colors[1:2]],
     state = initialize!)
 setangles!(wc, "julia", 0)
-initialize!(wc, "julia")
+setangles!(wc, "function", 0)
+initialize!(wc, ["julia", "function"])
 #md# ### uniform style
 gifdirectory = "animation1/uniform"
 setpositions!(wc, :, (-1000,-1000))
