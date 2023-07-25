@@ -59,6 +59,7 @@ begin
 	redirect_stdio(stdout=devnull, stderr=devnull)
     using PythonCall
     using CondaPkg
+	CondaPkg.add("jieba")
 	redirect_stdio()
 	nothing
 end
