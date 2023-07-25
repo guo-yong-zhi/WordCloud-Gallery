@@ -37,22 +37,18 @@ begin
 			run(`bash -c "cd $path; tar -xf wqy-bitmapsong.tar.gz"`)
 		end
 	end
-	function install_noto_sans_cjk(path)
-		download("https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/OTC/NotoSansCJK-VF.ttf.ttc", "$path/NotoSansCJK-VF.ttf.ttc")
-		download("https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/OTC/NotoSansMonoCJK-VF.ttf.ttc", "$path/NotoSansMonoCJK-VF.ttf.ttc")
-		download("https://github.com/googlefonts/noto-cjk/raw/main/Serif/Variable/OTC/NotoSerifCJK-VF.ttf.ttc", "$path/NotoSerifCJK-VF.ttf.ttc")
-	end
 	if homedir() == "/home/jrun"
-		font_folder = "/home/jrun/.local/share/fonts"
-		run(`bash -c "mkdir -p $font_folder"`)
-		# run(`bash -c "ls $font_folder"`)
-		install_juliamono(font_folder)
-		install_unifont(font_folder)
-		# install_wqy(font_folder)
-		install_noto_sans_cjk(font_folder)
-		# run(`bash -c "cd $(font_folder); ls"`)
-		Fontconfig_jll.fc_cache() do exe
-			run(`$exe`)
+		redirect_stdio(stdout=devnull, stderr=devnull) do
+			font_folder = "/home/jrun/.local/share/fonts"
+			run(`bash -c "mkdir -p $font_folder"`)
+			# run(`bash -c "ls $font_folder"`)
+			install_juliamono(font_folder)
+			install_unifont(font_folder)
+			install_wqy(font_folder)
+			# run(`bash -c "cd $(font_folder); ls"`)
+			Fontconfig_jll.fc_cache() do exe
+				run(`$exe`)
+			end
 		end
 	end
 	
@@ -1831,6 +1827,6 @@ version = "3.5.0+0"
 # ╟─9396cf96-d553-43db-a839-273fc9febd5a
 # ╟─1a4d1e62-6a41-4a75-a759-839445dacf4f
 # ╟─b09620ef-4495-4c83-ad1c-2d8b0ed70710
-# ╠═daf38998-c448-498a-82e2-b48a6a2b9c27
+# ╟─daf38998-c448-498a-82e2-b48a6a2b9c27
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
