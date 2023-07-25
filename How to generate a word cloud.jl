@@ -16,52 +16,52 @@ end
 
 # ╔═╡ daf38998-c448-498a-82e2-b48a6a2b9c27
 begin
-	using Fontconfig_jll
-	using Downloads: download
-	function install_juliamono(path)
-		if !(isfile("$path/juliamono.zip"))
-			download("https://github.com/cormullion/juliamono/releases/download/v0.050/JuliaMono-ttf.zip", "$path/juliamono.zip")
-			run(`bash -c "cd $path; unzip juliamono"`)
-		end
-	end
-	function install_unifont(path)
-		download("https://unifoundry.com/pub/unifont/unifont-15.0.06/font-builds/unifont-15.0.06.ttf", "$path/unifont.ttf")
-	end
-	function install_wqy(path)
-		if !(isfile("$path/wqy-microhei.tar.gz"))
-			download("https://jaist.dl.sourceforge.net/project/wqy/wqy-microhei/0.2.0-beta/wqy-microhei-0.2.0-beta.tar.gz", "$path/wqy-microhei.tar.gz")
-			run(`bash -c "cd $path; tar -xf wqy-microhei.tar.gz"`)
-		end
-		if !(isfile("$path/wqy-bitmapsong.tar.gz"))
-			download("https://jaist.dl.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-pcf-1.0.0-RC1.tar.gz", "$path/wqy-bitmapsong.tar.gz")
-			run(`bash -c "cd $path; tar -xf wqy-bitmapsong.tar.gz"`)
-		end
-	end
-	if homedir() == "/home/jrun"
-		redirect_stdio(stdout=devnull, stderr=devnull) do
-			font_folder = "/home/jrun/.local/share/fonts"
-			run(`bash -c "mkdir -p $font_folder"`)
-			# run(`bash -c "ls $font_folder"`)
-			install_juliamono(font_folder)
-			install_unifont(font_folder)
-			install_wqy(font_folder)
-			# run(`bash -c "cd $(font_folder); ls"`)
-			Fontconfig_jll.fc_cache() do exe
-				run(`$exe`)
-			end
-		end
-	end
-	
+    using Fontconfig_jll
+    using Downloads: download
+    function install_juliamono(path)
+        if !(isfile("$path/juliamono.zip"))
+            download("https://github.com/cormullion/juliamono/releases/download/v0.050/JuliaMono-ttf.zip", "$path/juliamono.zip")
+            run(`bash -c "cd $path; unzip juliamono"`)
+        end
+    end
+    function install_unifont(path)
+        download("https://unifoundry.com/pub/unifont/unifont-15.0.06/font-builds/unifont-15.0.06.ttf", "$path/unifont.ttf")
+    end
+    function install_wqy(path)
+        if !(isfile("$path/wqy-microhei.tar.gz"))
+            download("https://jaist.dl.sourceforge.net/project/wqy/wqy-microhei/0.2.0-beta/wqy-microhei-0.2.0-beta.tar.gz", "$path/wqy-microhei.tar.gz")
+            run(`bash -c "cd $path; tar -xf wqy-microhei.tar.gz"`)
+        end
+        if !(isfile("$path/wqy-bitmapsong.tar.gz"))
+            download("https://jaist.dl.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-pcf-1.0.0-RC1.tar.gz", "$path/wqy-bitmapsong.tar.gz")
+            run(`bash -c "cd $path; tar -xf wqy-bitmapsong.tar.gz"`)
+        end
+    end
+    if homedir() == "/home/jrun"
+        redirect_stdio(stdout=devnull, stderr=devnull) do
+            font_folder = "/home/jrun/.local/share/fonts"
+            run(`bash -c "mkdir -p $font_folder"`)
+            # run(`bash -c "ls $font_folder"`)
+            install_juliamono(font_folder)
+            install_unifont(font_folder)
+            install_wqy(font_folder)
+            # run(`bash -c "cd $(font_folder); ls"`)
+            Fontconfig_jll.fc_cache() do exe
+                run(`$exe`)
+            end
+        end
+    end
+    
     using PlutoUI
     using WordCloud
     using HTTP
     using ImageIO
-	redirect_stdio(stdout=devnull, stderr=devnull)
+    redirect_stdio(stdout=devnull, stderr=devnull)
     using PythonCall
     using CondaPkg
-	CondaPkg.add("jieba")
-	redirect_stdio()
-	nothing
+    CondaPkg.add("jieba")
+    redirect_stdio()
+    nothing
 end
 
 # ╔═╡ 10b8d675-ee35-46dd-aee7-6792749d16f2
@@ -279,54 +279,54 @@ begin
     This format is useful for quickly perceiving the most prominent terms to determine its relative prominence.  
     """
     defaultttable = """
-		বাংলা, 234
-		भोजपुरी, 52.3
-		مصري, 77.4
-		English, 380
-		Français, 80.8
-		ગુજરાતી, 57.1
-		هَوْسَ, 51.7
-		हिन्दी, 345
-		فارسی, 57.2
-		Italiano, 64.6
-		日本語, 123
-		ꦧꦱꦗꦮ, 68.3
-		한국어, 81.7
-		普通话, 939
-		मराठी, 83.2
-		Português, 236
-		Русский, 147
-		Español, 485
-		Deutsch, 75.3
-		தமிழ், 78.6
-		తెలుగు, 83
-		Türkçe, 84
-		اردو, 70.6
-		Tiếng, Việt, 85
-		پنجابی, 66.7
-		吴语, 83.4
-		粤语, 86.1
-		"""
+        বাংলা, 234
+        भोजपुरी, 52.3
+        مصري, 77.4
+        English, 380
+        Français, 80.8
+        ગુજરાતી, 57.1
+        هَوْسَ, 51.7
+        हिन्दी, 345
+        فارسی, 57.2
+        Italiano, 64.6
+        日本語, 123
+        ꦧꦱꦗꦮ, 68.3
+        한국어, 81.7
+        普通话, 939
+        मराठी, 83.2
+        Português, 236
+        Русский, 147
+        Español, 485
+        Deutsch, 75.3
+        தமிழ், 78.6
+        తెలుగు, 83
+        Türkçe, 84
+        اردو, 70.6
+        Tiếng, Việt, 85
+        پنجابی, 66.7
+        吴语, 83.4
+        粤语, 86.1
+        """
     nothing
 end
 
 # ╔═╡ 9191230b-b72a-4707-b7cf-1a51c9cdb217
 if texttype == "Web"
     md"""🌐 $(@bind url TextField(70, default="https://help.juliahub.com/juliahub/stable/pluto2023"))  
-	
-	( If you don't know what to fill in, give *http://en.wikipedia.org/wiki/Special:random* a shot. )  
+    
+    ( If you don't know what to fill in, give *http://en.wikipedia.org/wiki/Special:random* a shot. )  
 
-	We retrieve the html content using the [`HTTP.jl`](https://github.com/JuliaWeb/HTTP.jl) package and then convert it into plain text.
-	"""
+    We retrieve the html content using the [`HTTP.jl`](https://github.com/JuliaWeb/HTTP.jl) package and then convert it into plain text.
+    """
 elseif texttype == "Text"
     @bind text_ TextField((55, 10), defaulttext)
 elseif texttype == "File"
     @bind uploadedfile FilePicker()
 else
     md"""
-	*The first column contains words, the second column contains weights.*
-	$(@bind text_ TextField((20, 15), defaultttable))
-	"""
+    *The first column contains words, the second column contains weights.*
+    $(@bind text_ TextField((20, 15), defaultttable))
+    """
 end
 
 # ╔═╡ 66f4b71e-01e5-4279-858b-04d44aeeb574
@@ -483,7 +483,7 @@ begin
         # rethrow(e)
     end
     md"""###### ✿ Text Processing
-	We plan to support both English and Chinese. English text can be easily split using spaces, while Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."""
+    We plan to support both English and Chinese. English text can be easily split using spaces, while Chinese word segmentation is more challenging. To address this, we utilize [`PythonCall.jl`](https://github.com/cjdoris/PythonCall.jl) to call [`jieba`](https://github.com/fxsjy/jieba), which effectively handles Chinese word segmentation for us."""
 end
 
 # ╔═╡ 77e13474-8987-4cc6-93a9-ea68ca53b217
