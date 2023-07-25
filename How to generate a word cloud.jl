@@ -121,30 +121,18 @@ The following discussion focuses on the more difficult part — adjustment algor
 
 # ╔═╡ 2d30826d-5730-4f58-9c01-09f7c4aeb54d
 md"""
-1. **Ternary Raster Pyramid Construction**: Initially, a binary raster mask is created for each word, and based on this, a ternary raster pyramid is constructed. This pyramid comprises downsampled layers of the original mask. Each subsequent layer is downsampled at a 2:1 scale. Consequently, the pyramid can be viewed as a collection of hierarchical bounding boxes. Each pixel in every layer (tree node) can take one of three values: `FULL`, `EMPTY`, or `MIX`.
+1. **Ternary Raster Pyramid Construction**: Initially, a binary raster mask is created for each word, and based on this, a ternary raster pyramid is constructed. This pyramid comprises downsampled layers of the original mask. Each subsequent layer is downsampled at a 2:1 scale. Consequently, the pyramid can be viewed as a collection of hierarchical bounding boxes. Each pixel in every layer (tree node) can take one of three values: `FULL`, `EMPTY`, or `MIX`. $(Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/pyramid1.png?raw=true")) $(Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/pyramid2.png?raw=true"))
 """
-
-# ╔═╡ bc9e1be6-8589-46bb-8e7d-fd0c75c3e7d5
-Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/pyramid1.png?raw=true")
-
-# ╔═╡ 9ce92b78-007f-4d1b-8a67-c88e8793c22b
-Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/pyramid2.png?raw=true")
 
 # ╔═╡ a3b208a3-20c0-439e-96fd-10b0e5cc188a
 md"""
-2. **Top-Down Collision Detection**: The algorithm employs a top-down approach to identify collisions between two pyramids or trees. At level 𝑙 and coordinates (𝑎,𝑏), if a node in one tree is `FULL` and the corresponding node in the other tree is not `EMPTY`, a collision occurs at (𝑙,𝑎,𝑏). However, pairwise collision detection between multiple objects would be time-consuming. To address this, the algorithm first locates the objects within hierarchical sub-regions. It then detects collisions between objects within each sub-region and between objects in sub-regions and their ancestral regions.
+2. **Top-Down Collision Detection**: The algorithm employs a top-down approach to identify collisions between two pyramids or trees. At level 𝑙 and coordinates (𝑎,𝑏), if a node in one tree is `FULL` and the corresponding node in the other tree is not `EMPTY`, a collision occurs at (𝑙,𝑎,𝑏). However, pairwise collision detection between multiple objects would be time-consuming. To address this, the algorithm first locates the objects within hierarchical sub-regions. It then detects collisions between objects within each sub-region and between objects in sub-regions and their ancestral regions. $(Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/collision.png?raw=true"))
 """
-
-# ╔═╡ 87a3f36c-079c-4a91-9e8c-f4b6f8cab644
-Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/collision.png?raw=true")
 
 # ╔═╡ b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 md"""
-3. **Object Movement and Reconstruction**: In the final step, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the pyramids to prepare for the next round of collision detection.
+3. **Object Movement and Reconstruction**: In the final step, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the pyramids to prepare for the next round of collision detection. $(Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true"))
 """
-
-# ╔═╡ 399582fd-0a17-4cee-8438-32bd2bcba840
-Resource("https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true")
 
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
 md"""For the details of the implementation of the algorithm, you can refer to our package [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl).
@@ -1806,12 +1794,8 @@ version = "3.5.0+0"
 # ╟─024a576b-a38d-4eac-bf90-537c46a0be90
 # ╟─13d75a82-7983-44c0-b367-563ef338a066
 # ╟─2d30826d-5730-4f58-9c01-09f7c4aeb54d
-# ╟─bc9e1be6-8589-46bb-8e7d-fd0c75c3e7d5
-# ╟─9ce92b78-007f-4d1b-8a67-c88e8793c22b
 # ╟─a3b208a3-20c0-439e-96fd-10b0e5cc188a
-# ╟─87a3f36c-079c-4a91-9e8c-f4b6f8cab644
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
-# ╟─399582fd-0a17-4cee-8438-32bd2bcba840
 # ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
 # ╟─0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
 # ╟─bda3fa85-04a3-4033-9890-a5b4f10e2a77
