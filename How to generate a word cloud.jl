@@ -16,6 +16,46 @@ end
 
 # ╔═╡ daf38998-c448-498a-82e2-b48a6a2b9c27
 begin
+	using Fontconfig_jll
+	using Downloads: download
+	function install_juliamono(path)
+		if !(isfile("$path/juliamono.zip"))
+			download("https://github.com/cormullion/juliamono/releases/download/v0.050/JuliaMono-ttf.zip", "$path/juliamono.zip")
+			run(`bash -c "cd $path; unzip juliamono"`)
+		end
+	end
+	function install_unifont(path)
+		download("https://unifoundry.com/pub/unifont/unifont-15.0.06/font-builds/unifont-15.0.06.ttf", "$path/unifont.ttf")
+	end
+	function install_wqy(path)
+		if !(isfile("$path/wqy-microhei.tar.gz"))
+			download("https://jaist.dl.sourceforge.net/project/wqy/wqy-microhei/0.2.0-beta/wqy-microhei-0.2.0-beta.tar.gz", "$path/wqy-microhei.tar.gz")
+			run(`bash -c "cd $path; tar -xf wqy-microhei.tar.gz"`)
+		end
+		if !(isfile("$path/wqy-bitmapsong.tar.gz"))
+			download("https://jaist.dl.sourceforge.net/project/wqy/wqy-bitmapfont/1.0.0-RC1/wqy-bitmapsong-pcf-1.0.0-RC1.tar.gz", "$path/wqy-bitmapsong.tar.gz")
+			run(`bash -c "cd $path; tar -xf wqy-bitmapsong.tar.gz"`)
+		end
+	end
+	function install_noto_sans_cjk(path)
+		download("https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/OTC/NotoSansCJK-VF.ttf.ttc", "$path/NotoSansCJK-VF.ttf.ttc")
+		download("https://github.com/googlefonts/noto-cjk/raw/main/Sans/Variable/OTC/NotoSansMonoCJK-VF.ttf.ttc", "$path/NotoSansMonoCJK-VF.ttf.ttc")
+		download("https://github.com/googlefonts/noto-cjk/raw/main/Serif/Variable/OTC/NotoSerifCJK-VF.ttf.ttc", "$path/NotoSerifCJK-VF.ttf.ttc")
+	end
+	if homedir() == "/home/jrun"
+		font_folder = "/home/jrun/.local/share/fonts"
+		run(`bash -c "mkdir -p $font_folder"`)
+		# run(`bash -c "ls $font_folder"`)
+		install_juliamono(font_folder)
+		install_unifont(font_folder)
+		# install_wqy(font_folder)
+		install_noto_sans_cjk(font_folder)
+		# run(`bash -c "cd $(font_folder); ls"`)
+		Fontconfig_jll.fc_cache() do exe
+			run(`$exe`)
+		end
+	end
+	
     using PlutoUI
     using WordCloud
     using HTTP
@@ -545,6 +585,8 @@ end
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CondaPkg = "992eb4ea-22a4-4c89-a5bb-47a3300528ab"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+Fontconfig_jll = "a3f928ae-7b40-5064-980b-68af3947d34b"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 ImageIO = "82e4d734-157c-48bb-816b-45c225c6df19"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
@@ -553,6 +595,7 @@ WordCloud = "6385f0a0-cb03-45b6-9089-4e0acc74b26b"
 
 [compat]
 CondaPkg = "~0.2.18"
+Fontconfig_jll = "~2.13.93"
 HTTP = "~1.9.14"
 ImageIO = "~0.6.6"
 PlutoUI = "~0.7.51"
@@ -566,7 +609,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "3e91b9df1689a48ca99273c372db614c887516dc"
+project_hash = "9c607570f4440bea895dd2dd5e4697fffb9b2bce"
 
 [[deps.AbstractFFTs]]
 deps = ["LinearAlgebra"]
@@ -1788,6 +1831,6 @@ version = "3.5.0+0"
 # ╟─9396cf96-d553-43db-a839-273fc9febd5a
 # ╟─1a4d1e62-6a41-4a75-a759-839445dacf4f
 # ╟─b09620ef-4495-4c83-ad1c-2d8b0ed70710
-# ╟─daf38998-c448-498a-82e2-b48a6a2b9c27
+# ╠═daf38998-c448-498a-82e2-b48a6a2b9c27
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
