@@ -137,7 +137,7 @@ md"""
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
 md"""For the details of the implementation of the algorithm, you can refer to our package [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl).
 
-Now we are familiar with the algorithm, let's turn it into an application.
+Now we are familiar with the algorithm. let's make an application based on it.
 """
 
 # ╔═╡ 0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
