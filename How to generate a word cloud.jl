@@ -135,10 +135,15 @@ md"""
 """
 
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
-md"""For the details of the implementation of the algorithm, you can refer to our package [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl).
-
-Now we are familiar with the algorithm. let's make an application based on it.
+md"""
+For detailed information about the algorithm implementation, please refer to our [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl) package. It is entirely implemented in Julia, fully leveraging the advantages of the language.
 """
+
+# ╔═╡ a5b14181-6b86-459a-888a-86525549003e
+
+
+# ╔═╡ 610c2181-3cea-4b4e-91d1-98aa3bc3f40e
+md"Now we are familiar with the algorithm. let's make an application based on it."
 
 # ╔═╡ 0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
 
@@ -1797,6 +1802,8 @@ version = "3.5.0+0"
 # ╟─a3b208a3-20c0-439e-96fd-10b0e5cc188a
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 # ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
+# ╟─a5b14181-6b86-459a-888a-86525549003e
+# ╟─610c2181-3cea-4b4e-91d1-98aa3bc3f40e
 # ╟─0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
 # ╟─bda3fa85-04a3-4033-9890-a5b4f10e2a77
 # ╟─9191230b-b72a-4707-b7cf-1a51c9cdb217
