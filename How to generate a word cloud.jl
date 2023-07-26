@@ -41,11 +41,11 @@ begin
     if homedir() == "/home/jrun"
 		font_folder = "/home/jrun/.local/share/fonts"
 		run(`bash -c "mkdir -p $font_folder"`)
-		# run(`bash -c "ls $font_folder"`)
+		run(`bash -c "ls $font_folder"`)
 		install_juliamono(font_folder)
 		install_unifont(font_folder)
 		install_wqy(font_folder)
-		# run(`bash -c "cd $(font_folder); ls"`)
+		run(`bash -c "cd $(font_folder); ls"`)
 		Fontconfig_jll.fc_cache() do exe
 			run(`$exe`)
 		end
