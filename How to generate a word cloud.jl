@@ -15,6 +15,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ daf38998-c448-498a-82e2-b48a6a2b9c27
+# ╠═╡ show_logs = false
 begin
     using Fontconfig_jll
     using Downloads: download
@@ -38,29 +39,25 @@ begin
         end
     end
     if homedir() == "/home/jrun"
-        redirect_stdio(stdout=devnull, stderr=devnull) do
-            font_folder = "/home/jrun/.local/share/fonts"
-            run(`bash -c "mkdir -p $font_folder"`)
-            # run(`bash -c "ls $font_folder"`)
-            install_juliamono(font_folder)
-            install_unifont(font_folder)
-            install_wqy(font_folder)
-            # run(`bash -c "cd $(font_folder); ls"`)
-            Fontconfig_jll.fc_cache() do exe
-                run(`$exe`)
-            end
-        end
+		font_folder = "/home/jrun/.local/share/fonts"
+		run(`bash -c "mkdir -p $font_folder"`)
+		# run(`bash -c "ls $font_folder"`)
+		install_juliamono(font_folder)
+		install_unifont(font_folder)
+		install_wqy(font_folder)
+		# run(`bash -c "cd $(font_folder); ls"`)
+		Fontconfig_jll.fc_cache() do exe
+			run(`$exe`)
+		end
     end
     
     using PlutoUI
     using WordCloud
     using HTTP
     using ImageIO
-    redirect_stdio(stdout=devnull, stderr=devnull)
     using PythonCall
     using CondaPkg
     CondaPkg.add("jieba")
-    redirect_stdio()
     nothing
 end
 
