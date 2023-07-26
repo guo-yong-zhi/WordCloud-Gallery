@@ -1,27 +1,63 @@
-বাংলা, 234
-भोजपुरी, 52.3
-مصري, 77.4
-English, 380
-Français, 80.8
-ગુજરાતી, 57.1
-هَوْسَ, 51.7
-हिन्दी, 345
-فارسی, 57.2
-Italiano, 64.6
-日本語, 123
-ꦧꦱꦗꦮ, 68.3
-한국어, 81.7
-普通话, 939
-मराठी, 83.2
-Português, 236
-Русский, 147
-Español, 485
-Deutsch, 75.3
-தமிழ், 78.6
-తెలుగు, 83
-Türkçe, 84
-اردو, 70.6
-Tiếng Việt, 85
-پنجابی, 66.7
-吴语, 83.4
-粤语, 86.1
+# https://en.wikipedia.org/wiki/List_of_languages_by_number_of_native_speakers
+
+## 来自你的消息:
+请把下面表格中的语言名称替换成其自身的文字：
+Languages with at least 50 million first-language speakers
+Bengali 	234
+Bhojpuri 	52.3
+Egyptian Spoken Arabic (excl. Saʽidi Arabic) 	77.4
+English 	380
+French 	80.8
+Gujarati 	57.1
+Hausa 	51.7
+Hindi (excl. Urdu, and other languages) 	345
+Iranian Persian (excl. Dari and Tajik) 	57.2
+Italian 	64.6
+Japanese 	123
+Javanese 	68.3
+Korean 	81.7
+Mandarin Chinese (incl. Standard Chinese, but excl. other varieties) 	939
+Marathi 	83.2
+Portuguese 	236
+Russian 	147
+Spanish 	485
+Standard German 	75.3
+Tamil 	78.6
+Telugu 	83
+Turkish 	84
+Urdu (excl. Hindi) 	70.6
+Vietnamese 	85
+Western Punjabi (excl. Eastern Punjabi) 	66.7
+Wu Chinese (incl. Shanghainese) 	83.4
+Yue Chinese (incl. Cantonese) 	86.1
+
+
+## 来自 ChatGPT 的消息:
+至少拥有五千万母语使用者的语言
+বাংলা 	234
+भोजपुरी 	52.3
+مصري 	77.4
+English 	380
+Français 	80.8
+ગુજરાતી 	57.1
+هَوْسَ 	51.7
+हिन्दी 	345
+فارسی 	57.2
+Italiano 	64.6
+日本語 	123
+ꦧꦱꦗꦮ 	68.3
+한국어 	81.7
+普通话 	939
+मराठी 	83.2
+Português 	236
+Русский 	147
+Español 	485
+Deutsch 	75.3
+தமிழ் 	78.6
+తెలుగు 	83
+Türkçe 	84
+اردو 	70.6
+Tiếng Việt 	85
+پنجابی 	66.7
+吴语 	83.4
+粤语 	86.1
