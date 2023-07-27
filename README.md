@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.12.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.12.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -11,6 +11,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 - [gathering](#gathering)
 - [highdensity](#highdensity)
 - [juliadoc](#juliadoc)
+- [languages](#languages)
 - [lettermask](#lettermask)
 - [logo](#logo)
 - [nomask](#nomask)
@@ -486,6 +487,46 @@ paint(wc, "juliadoc.svg")
 wc
 ```  
 ![](juliadoc.svg)  
+# languages
+WordCloud.jl supports text processing in English and Chinese. For other languages, you can input in the form of "word => weight".
+```julia
+using WordCloud
+words_weights = [
+    "普通话" => 939.0,
+    "Español" => 485.0,
+    "English" => 380.0,
+    "हिन्दी" => 345.0,
+    "Português" => 236.0,
+    "বাংলা" => 234.0,
+    "Русский" => 147.0,
+    "日本語" => 123.0,
+    "粤语" => 86.1,
+    "Tiếng Việt" => 85.0,
+    "Türkçe" => 84.0,
+    "吴语" => 83.4,
+    "मराठी" => 83.2,
+    "తెలుగు" => 83.0,
+    "한국어" => 81.7,
+    "Français" => 80.8,
+    "தமிழ்" => 78.6,
+    "مصري" => 77.4,
+    "Deutsch" => 75.3,
+    "اردو" => 70.6,
+    "ꦧꦱꦗꦮ" => 68.3,
+    "پنجابی" => 66.7,
+    "Italiano" => 64.6,
+    "فارسی" => 57.2,
+    "ગુજરાતી" => 57.1,
+    "भोजपुरी" => 52.3,
+    "هَوْسَ" => 51.7
+]
+wc = wordcloud(words_weights) |> generate!
+
+println("results are saved to languages.svg")
+paint(wc, "languages.svg")
+wc
+```  
+![](languages.svg)  
 # lettermask
 ```julia
 using WordCloud
