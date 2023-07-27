@@ -133,7 +133,7 @@ md"""
 
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
 md"""
-For detailed information about the algorithm implementation, please refer to our [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl) package. It is entirely implemented in Julia, fully leveraging the advantages of the language.
+For more details on the algorithm implementation, please refer to our [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl) package. It's fully implemented in Julia, making the most of the language's advantages.
 """
 
 # ╔═╡ a5b14181-6b86-459a-888a-86525549003e
@@ -281,6 +281,9 @@ md"**text colors:** $(@bind colors_ Select([:auto; WordCloud.Schemes])) $(@bind 
 
 # ╔═╡ 2870a2ee-aa99-48ec-a26d-fed7b040e6de
 @bind go Button("    🎲 Try again !    ")
+
+# ╔═╡ b174984b-8c9b-404a-be76-9179b6c3f29b
+html"""<div align="right"><i>For more details, check out our <a href="https://github.com/guo-yong-zhi/WordCloud.jl">WordCloud.jl</a> package.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</i></div>"""
 
 # ╔═╡ 21ba4b81-07aa-4828-875d-090e0b918c76
 begin
