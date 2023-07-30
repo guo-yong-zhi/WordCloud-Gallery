@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -74,46 +74,49 @@ md"![](https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/wordcl
 
 # ╔═╡ ffa6f9f4-0a00-409c-a4c3-b00a0060877f
 md"""
-How to generate a word cloud with algorithm? A direct answer to this question would be that we initially place the words and then carefully adjust their positions until they do not overlap.
+#### ❋ Core Algorithm 
+How to generate a word cloud with algorithm? A direct answer to this question would be that we initially place the words and then carefully adjust their positions until they do not overlap. Hence, our core algorithm includes two stages: placement and adjustment.
 """
 
 # ╔═╡ 04a2b044-3e90-4c22-a2af-143f5476b6c8
 md"""
+###### ✿ Placement
 The algorithm for placing words is relatively simple since each word is positioned only once, making efficiency less critical. Different placing strategies will result in different word cloud styles. For instance, the two approaches below lead to a uniform style and a gathering style, respectively.
 """
 
 # ╔═╡ c51883b6-5ef6-4a78-bdc2-b39e49403ecf
 md"""
-- Placing — Uniform style
+- placement — uniform style
   ![](https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform/animation.gif?raw=true)
 """
 
 # ╔═╡ e5d15923-9a17-493d-b2af-244509e1e3ba
 md"""
-- Placing — Gathering style
+- placement — gathering style
   ![](https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering/animation.gif?raw=true)
 """
 
 # ╔═╡ 3826a575-abef-4633-93ee-78a299da9998
 md"""
-Developing an effective algorithm for adjusting positions presents a considerable challenge. The efficiency of this step is rather critical as it involves repeated movement of words. The subsequent adjusting processes of the above examples are shown in the following pictures.
+###### ✿ Adjustment
+Designing an algorithm for adjusting positions presents a considerable challenge. This stage's efficiency is critical as it involves repeated movement of words. The adjustment processes for the examples above may look like the following:
 """
 
 # ╔═╡ 0e5f246d-aae1-4c4d-b6cd-92b2d2f617f9
 md"""
-- Adjustment — Uniform style
+- adjustment — uniform style
 ![](https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/uniform_fit/animation.gif?raw=true)
 """
 
 # ╔═╡ 638fa2aa-24c4-4867-ad2b-aa9e800fe324
 md"""
-- Adjustment — Gthering style
+- adjustment — gthering style
 ![](https://github.com/guo-yong-zhi/WordCloud-Gallery/blob/instruction/animation1/gathering_fit/animation.gif?raw=true)
 """
 
 # ╔═╡ 13d75a82-7983-44c0-b367-563ef338a066
 md"""
-The following discussion focuses on the more difficult part — adjustment algorithm, which consists of three main steps.
+So what's happening under the hood? Our adjustment algorithm can be divided into three phases:
 """
 
 # ╔═╡ 2d30826d-5730-4f58-9c01-09f7c4aeb54d
@@ -128,7 +131,7 @@ md"""
 
 # ╔═╡ b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 md"""
-3. **Object Movement and Reconstruction**: In the final step, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the pyramids to prepare for the next round of collision detection. ![](https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true)
+3. **Object Movement and Reconstruction**: In the final phase, each object in a collision pair is moved based on the local gradient near the collision point (𝑙,𝑎,𝑏). The movement aims to separate the objects and create more space between them. Specifically, the objects are shifted away from the `EMPTY` regions. After moving the objects, the algorithm rebuilds the pyramids to prepare for the next round of collision detection. ![](https://github.com/guo-yong-zhi/Stuffing.jl/blob/main/res/gradient.png?raw=true)
 """
 
 # ╔═╡ 14e1680e-c670-40a0-85ce-b5c1b8b79408
@@ -136,14 +139,11 @@ md"""
 For more details on the algorithm implementation, please refer to our [`Stuffing.jl`](https://github.com/guo-yong-zhi/Stuffing.jl) package. It's fully implemented in Julia, making the most of the language's advantages.
 """
 
-# ╔═╡ a5b14181-6b86-459a-888a-86525549003e
-
-
 # ╔═╡ 610c2181-3cea-4b4e-91d1-98aa3bc3f40e
-md"Now we are familiar with the algorithm. let's make an application based on it."
-
-# ╔═╡ 0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
-
+md"""
+#### ❋ Application
+Now we understand the core algorithm. let's make an application based on it.
+"""
 
 # ╔═╡ bda3fa85-04a3-4033-9890-a5b4f10e2a77
 begin
@@ -170,9 +170,9 @@ end
 
 # ╔═╡ b4ffc272-8625-49f5-bee6-6fbbf03f9005
 md"""
-Then we determine font sizes by word frequencies and lengths. This involves a scaling process using a mapping function and normalization using a combination of power mean and tan functions. The formula can be expressed as:
+Then we determine font sizes by word frequencies and lengths. This involves a scaling process using a mapping function and normalization using a combination of power mean and tangent functions. The formula can be expressed as:
 
-$\text{font\_size} = \frac{\text{scale(frequency)}}{\text{powermean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
+$\text{font\_size} = \frac{\text{scale(frequency)}}{\text{power\_mean}(1, \text{word\_length}, p=\tan(\text{balance\_degree} \times \pi / 2))}$
 """
 
 # ╔═╡ dfe608b0-077c-437a-adf2-b1382a0eb4eb
@@ -611,19 +611,15 @@ WordCloud = "~0.12.1"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "34ce415c28a6895db2f2a166ab1ef3f09ff93b90"
 
 [[deps.AbstractFFTs]]
-deps = ["LinearAlgebra"]
+deps = ["ChainRulesCore", "LinearAlgebra"]
 git-tree-sha1 = "cad4c758c0038eea30394b1b671526921ca85b21"
 uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
 version = "1.4.0"
-weakdeps = ["ChainRulesCore"]
-
-    [deps.AbstractFFTs.extensions]
-    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -636,10 +632,6 @@ deps = ["LinearAlgebra", "Requires"]
 git-tree-sha1 = "76289dc51920fdc6e0013c872ba9551d54961c24"
 uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
 version = "3.6.2"
-weakdeps = ["StaticArrays"]
-
-    [deps.Adapt.extensions]
-    AdaptStaticArraysExt = "StaticArrays"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -721,12 +713,6 @@ git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
 
-    [deps.ColorVectorSpace.extensions]
-    SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "fc08e5930ee9a4e03f84bfb5211cb54e7769758a"
@@ -734,19 +720,15 @@ uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.10"
 
 [[deps.Compat]]
-deps = ["UUIDs"]
+deps = ["Dates", "LinearAlgebra", "UUIDs"]
 git-tree-sha1 = "5ce999a19f4ca23ea484e92a1774a61b8ca4cf8e"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "4.8.0"
-weakdeps = ["Dates", "LinearAlgebra"]
-
-    [deps.Compat.extensions]
-    CompatLinearAlgebraExt = "LinearAlgebra"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.1+0"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -1135,7 +1117,7 @@ uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
 version = "2.36.0+0"
 
 [[deps.LinearAlgebra]]
-deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
+deps = ["Libdl", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.Logging]]
@@ -1182,7 +1164,7 @@ version = "1.1.7"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.0+0"
 
 [[deps.Media]]
 deps = ["MacroTools", "Test"]
@@ -1207,7 +1189,7 @@ version = "0.3.4"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2022.2.1"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1240,7 +1222,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.20+0"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -1285,7 +1267,7 @@ version = "1.6.2"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+0"
+version = "10.40.0+0"
 
 [[deps.PNGFiles]]
 deps = ["Base64", "CEnum", "ImageCore", "IndirectArrays", "OffsetArrays", "libpng_jll"]
@@ -1324,9 +1306,9 @@ uuid = "30392449-352a-5448-841d-b1acce4e97dc"
 version = "0.42.2+0"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.8.0"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1402,10 +1384,6 @@ deps = ["Requires"]
 git-tree-sha1 = "1342a47bf3260ee108163042310d26f2be5ec90b"
 uuid = "c84ed2f1-dad5-54f0-aa8e-dbefe2724439"
 version = "0.4.5"
-weakdeps = ["FixedPointNumbers"]
-
-    [deps.Ratios.extensions]
-    RatiosFixedPointNumbersExt = "FixedPointNumbers"
 
 [[deps.RealDot]]
 deps = ["LinearAlgebra"]
@@ -1480,7 +1458,7 @@ version = "1.0.3"
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[deps.SparseArrays]]
-deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
+deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.StackViews]]
@@ -1490,14 +1468,10 @@ uuid = "cae243ae-269e-4f55-b966-ac2d0dc13c15"
 version = "0.1.1"
 
 [[deps.StaticArrays]]
-deps = ["LinearAlgebra", "Random", "StaticArraysCore"]
+deps = ["LinearAlgebra", "Random", "StaticArraysCore", "Statistics"]
 git-tree-sha1 = "9cabadf6e7cd2349b6cf49f1915ad2028d65e881"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
 version = "1.6.2"
-weakdeps = ["Statistics"]
-
-    [deps.StaticArrays.extensions]
-    StaticArraysStatisticsExt = "Statistics"
 
 [[deps.StaticArraysCore]]
 git-tree-sha1 = "36b3d696ce6366023a0ea192b4cd442268995a0d"
@@ -1507,7 +1481,6 @@ version = "1.4.2"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
 
 [[deps.StructTypes]]
 deps = ["Dates", "UUIDs"]
@@ -1521,15 +1494,10 @@ git-tree-sha1 = "6dd0909e93478b31579baf120a3ab15bf7aa9a7c"
 uuid = "4175e07e-e5b7-423e-8796-3ea7f6d48281"
 version = "0.10.0"
 
-[[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
-uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
-
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.3"
+version = "1.0.0"
 
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
@@ -1546,7 +1514,7 @@ version = "1.10.1"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.0"
+version = "1.10.1"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -1667,7 +1635,7 @@ version = "1.5.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.12+3"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1694,9 +1662,9 @@ uuid = "0ac62f75-1d6f-5e53-bd7c-93b484bb37c0"
 version = "0.15.1+0"
 
 [[deps.libblastrampoline_jll]]
-deps = ["Artifacts", "Libdl"]
+deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.1.1+0"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1767,9 +1735,7 @@ version = "3.5.0+0"
 # ╟─a3b208a3-20c0-439e-96fd-10b0e5cc188a
 # ╟─b7c1e2a5-d5ae-4e97-a1b0-a9f2d99a1100
 # ╟─14e1680e-c670-40a0-85ce-b5c1b8b79408
-# ╟─a5b14181-6b86-459a-888a-86525549003e
 # ╟─610c2181-3cea-4b4e-91d1-98aa3bc3f40e
-# ╟─0aeec0c5-fe8d-4d88-907f-ce4c064aae5a
 # ╟─bda3fa85-04a3-4033-9890-a5b4f10e2a77
 # ╟─9191230b-b72a-4707-b7cf-1a51c9cdb217
 # ╟─d8e73850-f0a6-4170-be45-5a7527f1ec39
@@ -1797,6 +1763,7 @@ version = "3.5.0+0"
 # ╟─a758178c-b6e6-491c-83a3-8b3fa594fc9e
 # ╟─2870a2ee-aa99-48ec-a26d-fed7b040e6de
 # ╟─fa6b3269-357e-4bf9-8514-70aff9df427f
+# ╟─b174984b-8c9b-404a-be76-9179b6c3f29b
 # ╟─21ba4b81-07aa-4828-875d-090e0b918c76
 # ╟─66f4b71e-01e5-4279-858b-04d44aeeb574
 # ╟─397fdd42-d2b2-46db-bf74-957909f47a58
