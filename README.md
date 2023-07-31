@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.12.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.12.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -488,7 +488,7 @@ wc
 ```  
 ![](juliadoc.svg)  
 # languages
-WordCloud.jl supports text processing in English and Chinese. For other languages, you can input in the form of "word => weight".
+WordCloud.jl can process English text. For Chinese text, please refer to the example [`中文`](#中文). For other languages, you can input the data in the form of "word => weight" list, as shown in the example below.
 ```julia
 using WordCloud
 words_weights = [
