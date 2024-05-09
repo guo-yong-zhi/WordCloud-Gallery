@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.12.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.13.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -27,7 +27,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
     mask=pkgdir(WordCloud) * "/res/alice_mask.png",
 	color="#faeef8",
     colors=:seaborn_dark,
@@ -43,7 +43,7 @@ wc
 This animation shows how the initial layout is generated.
 ```julia
 using WordCloud
-stopwords = WordCloud.stopwords_en ∪ ["said"]
+stopwords = WordCloud.STOPWORDS["eng"] ∪ ["said"]
 textfile = pkgdir(WordCloud)*"/res/alice.txt"
 wc = wordcloud(
     processtext(open(textfile), stopwords=stopwords, maxnum=300), 
@@ -143,7 +143,7 @@ as = WordCloud.randomangles() # (0,90,45,-45)
 fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
+    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords), 
     colors=cs,
     angles=as,
     density=dens,
@@ -156,7 +156,7 @@ wca = wordcloud(
 ```julia
 println("==Trump's==")
 wcb = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords),
+    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords),
     mask=getsvgmask(wca),
     masksize=:original,
     colors=cs,
@@ -225,7 +225,7 @@ as = WordCloud.randomangles() # (0,90,45,-45)#
 fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords), 
+    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords), 
     colors=cs,
     angles=as,
     density=dens,
@@ -234,7 +234,7 @@ wca = wordcloud(
     state=identity, # turn off the initialize! and layout! in advance
 )
 wcb = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords),
+    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords),
     mask=getsvgmask(wca),
     masksize=:original,
     colors=cs,
@@ -327,7 +327,7 @@ wca, wcb
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"], maxweight=1, maxnum=300), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"], maxweight=1, maxnum=300), 
     # mask = pad(WordCloud.tobitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
     mask=shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     masksize=:original,
@@ -380,7 +380,7 @@ By setting `style=:gathering` in the `layout!` function, larger words will be po
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
     angles=0, density=0.55,
     mask=squircle, rt=2.5 * rand(),
     state=initialize!)
@@ -400,7 +400,7 @@ using WordCloud
 In certain scenarios, there might be a need for generating a high-density output, and you might attempt to achieve it using the following code:
 ```julia
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
     mask = shape(box, 500, 400, cornerradius=10),
     colors = :Dark2_3,
     angles = (0, 90), # spacing = 2,
@@ -412,7 +412,7 @@ This is mainly because the minimum gap between two words is set to 2 pixels, con
 In cases where the image is small, the cost of 2 pixels becomes relatively higher. To address this issue, you have the option to set `spacing=0` or `spacing=1`. Alternatively, increasing the image size can also alleviate the issue.
 ```julia
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.stopwords_en ∪ ["said"]), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
     mask=shape(box, 500 * 2, 400 * 2, cornerradius=10 * 2),
     masksize=:original,
     colors=:Dark2_3,
@@ -488,7 +488,7 @@ wc
 ```  
 ![](juliadoc.svg)  
 # languages
-WordCloud.jl can process English text. For Chinese text, please refer to the example [`中文`](#中文). For other languages, you can input the data in the form of "word => weight" list, as shown in the example below.
+For languages that are not processed perfectly, you can refer to [the example for Chinese](#中文) or you can input the data in the form of a "word => weight" list, as illustrated in the following example.
 ```julia
 using WordCloud
 words_weights = [
@@ -794,7 +794,7 @@ wc
 ```julia
 using WordCloud
 stwords = ["us"];
-words_weights = processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.stopwords_en ∪ stwords)
+words_weights = processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords)
 words_weights = Dict(zip(words_weights...))
 ```  
 ### Embedding
