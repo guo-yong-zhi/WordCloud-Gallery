@@ -431,7 +431,7 @@ using WordCloud
 import TinySegmenter
 WordCloud.settokenizer!("jpn", TinySegmenter.tokenize)
 
-wc = wordcloud("花は桜木、人は武士", language="jpn", colors=0, mask=bezistar, npoints=5, maskcolor=(1, 192/255, 203/255), linecolor=(0, 0, 0), outline=2, starratio=0.65, backgroundcolor=(1, 1, 1, 0)) |> generate! # the argumet `language` is optional
+wc = wordcloud("花は桜木、人は武士", language="jpn") |> generate! # the argumet `language` is optional
 
 println("results are saved to japanese.svg")
 paint(wc, "japanese.svg")
