@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.13.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.13.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -10,6 +10,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 - [fromweb](#fromweb)
 - [gathering](#gathering)
 - [highdensity](#highdensity)
+- [japanese](#japanese)
 - [juliadoc](#juliadoc)
 - [languages](#languages)
 - [lettermask](#lettermask)
@@ -27,7 +28,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords_extra=["said"]), 
     mask=pkgdir(WordCloud) * "/res/alice_mask.png",
 	color="#faeef8",
     colors=:seaborn_dark,
@@ -43,10 +44,9 @@ wc
 This animation shows how the initial layout is generated.
 ```julia
 using WordCloud
-stopwords = WordCloud.STOPWORDS["eng"] ∪ ["said"]
 textfile = pkgdir(WordCloud)*"/res/alice.txt"
 wc = wordcloud(
-    processtext(open(textfile), stopwords=stopwords, maxnum=300), 
+    processtext(open(textfile), maxnum=300), 
     masksize = (300, 200),
     outline = 3,
     angles = 0:90,
@@ -136,14 +136,13 @@ end
 ```julia
 using WordCloud
 
-stwords = ["us"];
 println("==Obama's==")
 cs = WordCloud.randomscheme() # :Set1_8
 as = WordCloud.randomangles() # (0,90,45,-45)
 fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords), 
+    open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), 
     colors=cs,
     angles=as,
     density=dens,
@@ -156,7 +155,7 @@ wca = wordcloud(
 ```julia
 println("==Trump's==")
 wcb = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords),
+    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"),
     mask=getsvgmask(wca),
     masksize=:original,
     colors=cs,
@@ -219,13 +218,12 @@ This is a more symmetrical and accurate way to generate comparison wordclouds, b
 ```julia
 using WordCloud
 
-stwords = ["us"];
 cs = WordCloud.randomscheme() # :Set1_8#
 as = WordCloud.randomangles() # (0,90,45,-45)#
 fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords), 
+    open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), 
     colors=cs,
     angles=as,
     density=dens,
@@ -234,7 +232,7 @@ wca = wordcloud(
     state=identity, # turn off the initialize! and layout! in advance
 )
 wcb = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords),
+    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"),
     mask=getsvgmask(wca),
     masksize=:original,
     colors=cs,
@@ -327,7 +325,7 @@ wca, wcb
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"], maxweight=1, maxnum=300), 
+    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), maxweight=1, maxnum=300), 
     # mask = pad(WordCloud.tobitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
     mask=shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     masksize=:original,
@@ -380,7 +378,7 @@ By setting `style=:gathering` in the `layout!` function, larger words will be po
 ```julia
 using WordCloud
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
+    open(pkgdir(WordCloud) * "/res/alice.txt"), 
     angles=0, density=0.55,
     mask=squircle, rt=2.5 * rand(),
     state=initialize!)
@@ -400,7 +398,7 @@ using WordCloud
 In certain scenarios, there might be a need for generating a high-density output, and you might attempt to achieve it using the following code:
 ```julia
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud)*"/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
+    open(pkgdir(WordCloud)*"/res/alice.txt"), 
     mask = shape(box, 500, 400, cornerradius=10),
     colors = :Dark2_3,
     angles = (0, 90), # spacing = 2,
@@ -412,7 +410,7 @@ This is mainly because the minimum gap between two words is set to 2 pixels, con
 In cases where the image is small, the cost of 2 pixels becomes relatively higher. To address this issue, you have the option to set `spacing=0` or `spacing=1`. Alternatively, increasing the image size can also alleviate the issue.
 ```julia
 wc = wordcloud(
-    processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ ["said"]), 
+    open(pkgdir(WordCloud) * "/res/alice.txt"), 
     mask=shape(box, 500 * 2, 400 * 2, cornerradius=10 * 2),
     masksize=:original,
     colors=:Dark2_3,
@@ -426,6 +424,20 @@ println("results are saved to highdensity.png")
 wc
 ```  
 ![highdensity](highdensity.png)  
+# japanese
+This package does not come with an integrated Japanese tokenizer. You can leverage the [`TinySegmenter.jl`](https://github.com/JuliaStrings/TinySegmenter.jl) package instead.
+```julia
+using WordCloud
+import TinySegmenter
+WordCloud.settokenizer!("jpn", TinySegmenter.tokenize)
+
+wc = wordcloud("花は桜木、人は武士", language="jpn", colors=0, mask=bezistar, npoints=5, maskcolor=(1, 192/255, 203/255), linecolor=(0, 0, 0), outline=2, starratio=0.65, backgroundcolor=(1, 1, 1, 0)) |> generate! # the argumet `language` is optional
+
+println("results are saved to japanese.svg")
+paint(wc, "japanese.svg")
+wc
+```  
+![](japanese.svg)  
 # juliadoc
 ```julia
 using WordCloud
@@ -488,7 +500,7 @@ wc
 ```  
 ![](juliadoc.svg)  
 # languages
-For languages that are not processed perfectly, you can refer to [the example for Chinese](#中文) or you can input the data in the form of a "word => weight" list, as illustrated in the following example.
+For languages that are not processed perfectly, you can refer to [the example for Chinese](#中文) and [the example for Japanese](#japanese). Or you can directly input the data in the form of a "word => weight" list, as illustrated in the following example.
 ```julia
 using WordCloud
 words_weights = [
@@ -793,8 +805,7 @@ wc
 ### Words
 ```julia
 using WordCloud
-stwords = ["us"];
-words_weights = processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), stopwords=WordCloud.STOPWORDS["eng"] ∪ stwords)
+words_weights = processtext(open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"))
 words_weights = Dict(zip(words_weights...))
 ```  
 ### Embedding
@@ -953,7 +964,7 @@ wc
 ```  
 ![](series/animation.gif)  
 # 中文
-中文需要分词，可以通过PythonCall调用python版的结巴分词  
+中文分词功能没有内建，可以通过PythonCall调用python版的结巴分词。
 ```julia
 
 using CondaPkg; CondaPkg.add("jieba")
@@ -966,6 +977,15 @@ TheInternationale = "起来，饥寒交迫的奴隶！\n起来，全世界受苦
 
 jieba.add_word("英特纳雄耐尔")
 
+```  
+方案1：你可以使用`WordCloud.settokenizer!`为中文注册分词器。当检测到中文文本输入时该分词器会被自动调用。
+```julia
+WordCloud.settokenizer!("zh", t->pyconvert(Vector{String}, jieba.lcut(t)))
+wc = wordcloud(TheInternationale)
+@show wc
+```  
+方案2：如果你只是单次使用不想注册，也可以传入手动分词之后的的词列表。
+```julia
 wc = wordcloud(
     processtext(pyconvert(Vector{String}, jieba.lcut(TheInternationale))), 
     colors="#DE2910",
