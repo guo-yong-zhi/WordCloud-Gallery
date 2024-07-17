@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v0.13.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.1.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -10,6 +10,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 - [fromweb](#fromweb)
 - [gathering](#gathering)
 - [highdensity](#highdensity)
+- [hyperlink](#hyperlink)
 - [japanese](#japanese)
 - [juliadoc](#juliadoc)
 - [languages](#languages)
@@ -23,6 +24,7 @@ This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), 
 - [recolor](#recolor)
 - [semantic](#semantic)
 - [series](#series)
+- [svgconfig](#svgconfig)
 - [中文](#中文)
 # alice
 ```julia
@@ -326,7 +328,7 @@ wca, wcb
 using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), maxweight=1, maxnum=300), 
-    # mask = pad(WordCloud.tobitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
+    # mask = padding(WordCloud.tobitmap(shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97)), 0.1),
     mask=shape(ellipse, 600, 500, color=(0.98, 0.97, 0.99), backgroundcolor=0.97, backgroundsize=(700, 550)),
     masksize=:original,
     colors=:seaborn_icefire_gradient,
@@ -418,12 +420,28 @@ wc = wordcloud(
     density=0.7) |> generate!
 paint(wc, "highdensity.png", ratio=0.5)
 ```  
+Instead of setting the mask with a larger size explicitly, you can set `avgfontsize`. Try something like `wordcloud(text, avgfontsize=24)`
 
 ```julia
 println("results are saved to highdensity.png")
 wc
 ```  
 ![highdensity](highdensity.png)  
+# hyperlink
+Hyperlinks can be embedded using wrapper SVG tag pairs, such as `<a href="https://www.google.com/search?q=$w">` and `</a>`. 
+The function `configsvgimages!` provides this capability.
+```julia
+using WordCloud
+wc = wordcloud(open(pkgdir(WordCloud) * "/LICENSE")) |> generate!
+for w in getwords(wc)
+    configsvgimages!(wc, w, wrappers="a"=>("href"=>"https://www.google.com/search?q=$w"))
+end
+println("results are saved to hyperlink.svg")
+paint(wc, "hyperlink.svg")
+wc
+```  
+(Right click on the image and open it in a new tab)
+![hyperlink](hyperlink.svg)  
 # japanese
 This package does not come with an integrated Japanese tokenizer. You can leverage the [`TinySegmenter.jl`](https://github.com/JuliaStrings/TinySegmenter.jl) package instead.
 ```julia
@@ -442,12 +460,12 @@ wc
 ```julia
 using WordCloud
 function drawjuliacircle(sz)
-    juliacirclessvg = WordCloud.Render.Drawing(sz, sz, :svg)
+    d = WordCloud.Render.Drawing(sz, sz, :svg)
     WordCloud.Render.origin()
     WordCloud.Render.background(0, 0, 0, 0)
     WordCloud.Render.juliacircles(sz ÷ 4)
     WordCloud.Render.finish()
-    juliacirclessvg
+    WordCloud.SVG(WordCloud.Render.svgstring(), d.height, d.width)
 end
 
 docs = (readdir(joinpath(dirname(Sys.BINDIR), "share/doc/julia/html/en", dir), join=true) for dir in ["manual", "base", "stdlib"])
@@ -577,7 +595,7 @@ function cloudshape(height, args...; backgroundcolor=(0, 0, 0, 0))
     Luxor.setcolor(parsecolor((0.796, 0.235, 0.20)))
     Luxor.Luxor.pie(-r, r, r, -π, 0, :fill)
     Luxor.finish()
-    d
+    WordCloud.SVG(Luxor.svgstring(), d.height, d.width)
 end
 wc = wordcloud(
     repeat(string.('a':'z'), 5),
@@ -963,6 +981,37 @@ WordCloud.Render.generate(gif, framerate=4)
 wc
 ```  
 ![](series/animation.gif)  
+# svgconfig
+```julia
+using WordCloud
+```  
+### Generate a word cloud first
+```julia
+wc = wordcloud(open(pkgdir(WordCloud) * "/res/alice.txt")) |> generate!
+```  
+### Add hyperlinks for each tag
+This can be done by adding a wrapper SVG node `<a>`
+* SVG ElementNode: `<a href="https://www.google.com/search?q=$w">` and `</a>`
+```julia
+configsvgimages!(wc, wrappers = ["a" => ("href" => "https://www.google.com/search?q=$w") for w in getwords(wc)])
+```  
+### Add animate and tooltips
+These things can be done by adding child nodes `<animate>` and `<title>`.
+* SVG ElementNode: `<animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/>`
+* SVG TextNode: `<title>$word</title>`
+```julia
+for word in getwords(wc)
+    animate = "animate" => [:attributeName => "opacity", :values => "1;0.5;1", 
+                            :begin => "$(rand(0:1000))ms", :dur => "1s", :repeatCount => "indefinite"]
+    title = "title" => word
+    configsvgimages!(wc, word, children=(animate, title))
+end
+println("results are saved to svgconfig.svg")
+paint(wc, "svgconfig.svg")
+wc
+```  
+(Right click on the image and open it in a new tab)
+![svgconfig](svgconfig.svg)  
 # 中文
 中文分词功能没有内建，可以通过PythonCall调用python版的结巴分词。
 ```julia
