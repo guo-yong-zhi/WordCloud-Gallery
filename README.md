@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.1.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.2.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -32,7 +32,7 @@ using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords_extra=["said"]), 
     mask=pkgdir(WordCloud) * "/res/alice_mask.png",
-	color="#faeef8",
+    color="#faeef8",
     colors=:seaborn_dark,
     angles=(0, 90),
     density=0.55,
@@ -139,17 +139,11 @@ end
 using WordCloud
 
 println("==Obama's==")
-cs = WordCloud.randomscheme() # :Set1_8
-as = WordCloud.randomangles() # (0,90,45,-45)
-fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
     open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), 
-    colors=cs,
-    angles=as,
     density=dens,
     backgroundcolor=:maskcolor,
-    fonts=fs,
     style=:uniform,
     ) |> generate!
 ```  
@@ -157,15 +151,9 @@ wca = wordcloud(
 ```julia
 println("==Trump's==")
 wcb = wordcloud(
-    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"),
-    mask=getsvgmask(wca),
-    masksize=:original,
-    colors=cs,
-    angles=as,
+    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt");
     density=dens,
-    backgroundcolor=:maskcolor,
-    maskcolor=getmaskcolor(wca),
-    fonts=fs,
+    getscheme(wca)...,
     state=identity, # disables the useless initialize! and layout! in advance
 )
 ```  
@@ -220,29 +208,17 @@ This is a more symmetrical and accurate way to generate comparison wordclouds, b
 ```julia
 using WordCloud
 
-cs = WordCloud.randomscheme() # :Set1_8#
-as = WordCloud.randomangles() # (0,90,45,-45)#
-fs = WordCloud.randomfonts()
 dens = 0.45 # not too high
 wca = wordcloud(
     open(pkgdir(WordCloud) * "/res/Barack Obama's First Inaugural Address.txt"), 
-    colors=cs,
-    angles=as,
     density=dens,
     backgroundcolor=:maskcolor,
-    fonts=fs,
     state=identity, # turn off the initialize! and layout! in advance
 )
 wcb = wordcloud(
-    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt"),
-    mask=getsvgmask(wca),
-    masksize=:original,
-    colors=cs,
-    angles=as,
+    open(pkgdir(WordCloud) * "/res/Donald Trump's Inaugural Address.txt");
     density=dens,
-    backgroundcolor=:maskcolor,
-    maskcolor=getmaskcolor(wca),
-    fonts=fs,
+    getscheme(wca)...,
     state=identity, 
 )
 ```  
