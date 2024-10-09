@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.2.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.2.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -32,7 +32,7 @@ using WordCloud
 wc = wordcloud(
     processtext(open(pkgdir(WordCloud) * "/res/alice.txt"), stopwords_extra=["said"]), 
     mask=pkgdir(WordCloud) * "/res/alice_mask.png",
-    color="#faeef8",
+    maskcolor="#faeef8",
     colors=:seaborn_dark,
     angles=(0, 90),
     density=0.55,
@@ -314,7 +314,8 @@ wc = wordcloud(
 
 setwords!(wc, "Alice", "Alice in Wonderland") # replace the word 'Alice' with 'Alice in Wonderland'
 setangles!(wc, "Alice in Wonderland", 0) # make it horizontal
-setcolors!(wc, "Alice in Wonderland", "purple");
+setcolors!(wc, "Alice in Wonderland", "purple")
+setfonts!(wc, "Alice in Wonderland", "fantasy bold")
 setfontsizes!(wc, "Alice in Wonderland", size(wc.mask, 2) / length("Alice in Wonderland"))
 initialize!(wc, "Alice in Wonderland")
 r = size(wc.mask, 2) / size(getimages(wc, "Alice in Wonderland"), 2) * 0.95
