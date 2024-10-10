@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v1.2.1).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.EXAMPLES` (WordCloud v1.2.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -93,6 +93,8 @@ wc
 ![](animation2/animation.gif)  
 # benchmark
 Test the performance of different trainers
+<details>
+
 ```julia
 using WordCloud
 using Random
@@ -133,6 +135,8 @@ for (i, (wc, e)) in enumerate(zip(wcs, es))
     println(repr("text/plain", e))
 end
 ```  
+</details>
+
 # compare
 ### First generate the wordcloud on the left  
 ```julia
@@ -674,7 +678,7 @@ The [engine](https://github.com/guo-yong-zhi/Stuffing.jl) is designed for genera
 ```julia
 using WordCloud
 
-sc = WordCloud.randomscheme() |> unique # unique makes Int -> Vector{Int}
+sc = WordCloud.randomcolorscheme() |> unique # unique makes Int -> Vector{Int}
 l = 200
 wc = wordcloud(
     repeat(["placeholder"], l), repeat([1], l), 
@@ -808,18 +812,18 @@ The positions of words can be initialized with pre-trained word vectors so that 
 ```julia
 using Embeddings
 using TSne
-const embtable = load_embeddings(GloVe{:en})
-const get_word_index = Dict(word => ii for (ii, word) in enumerate(embtable.vocab))
+const EMB = load_embeddings(GloVe{:en})
+const WORDS_INDICES = Dict(word => ii for (ii, word) in enumerate(EMB.vocab))
 function get_embedding(word)
-    ind = get_word_index[word]
-    emb = embtable.embeddings[:,ind]
+    ind = WORDS_INDICES[word]
+    emb = EMB.embeddings[:,ind]
     return emb
 end
 wordvec = Dict()
 for k in keys(words_weights)
-    if k in keys(get_word_index)
+    if k in keys(WORDS_INDICES)
         wordvec[k] = get_embedding(k)
-    elseif lowercase(k) in keys(get_word_index)
+    elseif lowercase(k) in keys(WORDS_INDICES)
         wordvec[k] = get_embedding(lowercase(k))
     else
         pop!(words_weights, k)
