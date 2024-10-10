@@ -42,15 +42,11 @@ using WordCloud
 eval.(Meta.parse.(ARGS))
 doeval = (@isdefined doeval) ? doeval : true
 exception = (@isdefined exception) ? exception : true
-using Pkg
-using UUIDs
-ctx = Pkg.Operations.Context()
-v = ctx.env.manifest[UUID("6385f0a0-cb03-45b6-9089-4e0acc74b26b")].version
 
-function examplesmarkdown(examples=WordCloud.examples; doeval=doeval, exception=exception)
+function examplesmarkdown(examples=WordCloud.EXAMPLES; doeval=doeval, exception=exception)
     mds= [
     "# WordCloud-Gallery\n"
-    "This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.examples` (WordCloud v$v).  "
+    "This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.EXAMPLES` (WordCloud v$(pkgversion(WordCloud))).  "
     "Run `evalfile(\"generate.jl\", [\"doeval=true\", \"exception=true\"])` in julia REPL to create this file.  \n"
     ["- [$e](#$(lowercase(replace(e, " "=>"-"))))\n" for e in examples]...
     ]
