@@ -1,5 +1,5 @@
 # WordCloud-Gallery
-This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.EXAMPLES` (WordCloud v1.3.0).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
+This is a gallery of [WordCloud.jl](https://github.com/guo-yong-zhi/WordCloud), which is automatically generated from `WordCloud.EXAMPLES` (WordCloud v1.3.2).  Run `evalfile("generate.jl", ["doeval=true", "exception=true"])` in julia REPL to create this file.  
 - [alice](#alice)
 - [animation1](#animation1)
 - [animation2](#animation2)
@@ -568,12 +568,12 @@ function cloudshape(height, args...; backgroundcolor=(0, 0, 0, 0))
     r = height / 2
     d = Luxor.Drawing((2height, height)..., :svg)
     Luxor.origin()
-    Luxor.background(parsecolor(backgroundcolor))
-    Luxor.setcolor(parsecolor((0.22, 0.596, 0.149)))
+    Luxor.background(ascolor(backgroundcolor))
+    Luxor.setcolor(ascolor((0.22, 0.596, 0.149)))
     Luxor.pie(0, 0, r, 0, 2π, :fill)
-    Luxor.setcolor(parsecolor((0.584, 0.345, 0.698)))
+    Luxor.setcolor(ascolor((0.584, 0.345, 0.698)))
     Luxor.pie(r, r, r, -π, 0, :fill)
-    Luxor.setcolor(parsecolor((0.796, 0.235, 0.20)))
+    Luxor.setcolor(ascolor((0.796, 0.235, 0.20)))
     Luxor.Luxor.pie(-r, r, r, -π, 0, :fill)
     Luxor.finish()
     WordCloud.SVG(Luxor.svgstring(), d.height, d.width)
@@ -789,7 +789,7 @@ mixstyleimg = paint(wc, background=background2)
 ```julia
 h, w = size(avgimg)
 lw = 21
-lc = eltype(avgimg)(parsecolor(0.1))
+lc = eltype(avgimg)(ascolor(0.1))
 vbar = zeros(eltype(avgimg), (h, lw))
 hbar = zeros(eltype(avgimg), (lw, 2w + lw))
 vbar[:, lw ÷ 2 + 1] .= lc
@@ -878,7 +878,7 @@ println("$(length(lb)) words are divided into $(length(unique(lb))) groups")
 ```  
 
 ```julia
-colors = parsecolor(:seaborn_dark)
+colors = ascolor(:seaborn_dark)
 setcolors!(wc, words, colors[lb .% length(colors) .+ 1])
 recolor!(wc, style=:reset)
 paint(wc, "semantic_clustering.png")
